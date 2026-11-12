@@ -4,9 +4,10 @@
 <base target="_top">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#1f2b6c">
+<meta name="theme-color" content="#2A3C76">
 <title>ระบบการลา | Leave Flow Pro</title>
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>tailwind.config={theme:{extend:{colors:{blue:{50:"#F3F5FB",100:"#E8ECF7",200:"#D3DAEE",300:"#B6C3E6",400:"#89A0CF",500:"#5B73B3",600:"#2A3C76",700:"#243468",800:"#1F2C58",900:"#18234A"}}}}}</script>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
@@ -14,90 +15,98 @@
 
 <style>
 :root{
-  /* Navy + Coral — ตามภาพอ้างอิง */
-  --navy:#1f2b6c; --navy-2:#2b3a8c; --coral:#ff6b6b; --coral-d:#f25757;
-  --p:#1f2b6c; --pc:#e6e8f4; --on-pc:#1f2b6c;
-  --ink:#1f2b6c; --ink-2:#6b7390; --line:#e6e8f2; --field:#eef0f6; --outline:#c3c8dc;
-  --grad:linear-gradient(135deg,#1a2460 0%,#2b3a8c 100%);
-  --e1:0 2px 10px rgba(31,43,108,.07);
-  --e2:0 6px 16px rgba(255,107,107,.35);
+  /* Material Design 3 — Blue / White tokens */
+  --p:#2A3C76;            /* primary */
+  --pc:#E8ECF7;           /* primary container */
+  --on-pc:#2A3C76;
+  --ink:#1F2A55;          /* on-surface */
+  --ink-2:#5B6A99;        /* on-surface-variant */
+  --line:#E1E5F0;        /* outline-variant */
+  --outline:#8190B8;
+  --grad:linear-gradient(135deg,#2A3C76 0%,#34478F 100%);
+  --grad-page:linear-gradient(160deg,#ffffff 0%,#F1F2F6 55%,#E4E8F2 100%);
+  --e1:0 1px 2px rgba(42,60,118,.08),0 1px 3px rgba(42,60,118,.06);
+  --e2:0 6px 16px rgba(42,60,118,.22);
 }
-html{font-size:15px;background:#eceef4;min-height:100%}
+html{font-size:15px;background-color:#F1F2F6;background-image:var(--grad-page);background-attachment:fixed;min-height:100%}
 body{font-family:'Sarabun',sans-serif;color:var(--ink);font-size:1rem;-webkit-font-smoothing:antialiased;min-height:100vh}
 .app-shell{height:100vh;height:100dvh}
-.text-navy{color:var(--navy)} .text-coral{color:var(--coral)} .bg-navy{background:var(--navy)}
 
 /* ---------- Surfaces ---------- */
-.card{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--e1);overflow:hidden}
-.card-hero{background:var(--grad);color:#fff;border:0;box-shadow:0 8px 20px rgba(31,43,108,.25);position:relative}
-.card-hero::after{content:"";position:absolute;right:-36px;top:-46px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.07)}
-.card-hero::before{content:"";position:absolute;right:46px;bottom:-54px;width:96px;height:96px;border-radius:50%;background:rgba(255,107,107,.45)}
+.card{background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:20px;box-shadow:var(--e1);overflow:hidden}
+.card-hero{background:var(--grad);color:#fff;border:0;box-shadow:var(--e2);position:relative}
+.card-hero::after{content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.16)}
+.card-hero::before{content:"";position:absolute;right:50px;bottom:-60px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.1)}
 .icon-tile{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .cap{font-size:.875rem;font-weight:700;color:var(--ink-2)}
-.bar{height:6px;border-radius:99px;background:#e6e8f4;overflow:hidden}
-.bar>span{display:block;height:100%;border-radius:99px;background:var(--navy);transition:width .4s}
+.bar{height:6px;border-radius:99px;background:#DDE3F3;overflow:hidden}
+.bar>span{display:block;height:100%;border-radius:99px;background:var(--grad);transition:width .4s}
 
-/* ---------- Filled text fields ---------- */
-input[type=text],input[type=password],input[type=date],input[type=number],select{
-  width:100%;height:46px;padding:0 14px;border:1.5px solid transparent;border-radius:10px;
-  background:var(--field);color:var(--ink);font:inherit;font-size:.95rem;transition:border-color .2s,background .2s;box-sizing:border-box}
-input::placeholder{color:#a3a9c2}
-input:focus,select:focus{outline:none;border-color:var(--navy);background:#fff}
-.lbl{display:block;margin-bottom:6px;font-size:.85rem;font-weight:700;color:var(--navy)}
+/* ---------- Outlined text fields ---------- */
+input[type=text],input[type=password],input[type=date],input[type=time],input[type=number],select{
+  width:100%;height:46px;padding:0 14px;border:1px solid var(--outline);border-radius:10px;
+  background:#fff;color:var(--ink);font:inherit;font-size:.95rem;transition:border-color .2s,box-shadow .2s;box-sizing:border-box}
+input:focus,select:focus{outline:none;border-color:var(--p);box-shadow:0 0 0 1px var(--p)}
+.lbl{display:block;margin-bottom:6px;font-size:.85rem;font-weight:700;color:#1F2A55}
 input[type=radio]{appearance:none;margin:0;width:20px;height:20px;border:2px solid var(--outline);border-radius:50%;display:grid;place-content:center;cursor:pointer;background:#fff}
-input[type=radio]::before{content:"";width:10px;height:10px;border-radius:50%;transform:scale(0);transition:transform .12s;background:var(--navy)}
-input[type=radio]:checked{border-color:var(--navy)}
+input[type=radio]::before{content:"";width:10px;height:10px;border-radius:50%;transform:scale(0);transition:transform .12s;background:var(--p)}
+input[type=radio]:checked{border-color:var(--p)}
 input[type=radio]:checked::before{transform:scale(1)}
-input[type=file]{width:100%;padding:10px 14px;background:#fff;border:1.5px dashed var(--outline);border-radius:12px;cursor:pointer;font:inherit}
-input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border:0;border-radius:99px;background:var(--navy);color:#fff;font-weight:700;cursor:pointer}
+input[type=file]{width:100%;padding:10px 14px;background:#fff;border:1px solid var(--outline);border-radius:12px;cursor:pointer;font:inherit}
+input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border:0;border-radius:99px;background:var(--pc);color:var(--on-pc);font-weight:700;cursor:pointer}
 
-/* ---------- Buttons (กรมท่า + โคราล) ---------- */
+/* ---------- Buttons ---------- */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 20px;border-radius:99px;font-weight:600;font-size:.95rem;cursor:pointer;white-space:nowrap;transition:box-shadow .2s,background .2s,filter .2s}
 .btn-lg{height:46px;font-size:1rem}
 .btn-sm{height:32px;padding:0 14px;font-size:.85rem}
-.btn-fill{background:var(--coral);color:#fff;box-shadow:0 3px 10px rgba(255,107,107,.3)}
-.btn-fill:hover{box-shadow:var(--e2);background:var(--coral-d)}
-.btn-navy{background:var(--navy);color:#fff;box-shadow:0 3px 10px rgba(31,43,108,.25)}
-.btn-navy:hover{background:var(--navy-2)}
-.btn-tonal{background:var(--pc);color:var(--navy)}
-.btn-tonal:hover{background:#d8dcef}
-.btn-outline{background:#fff;color:var(--navy);border:1.5px solid var(--outline)}
-.btn-outline:hover{background:#f4f5fa}
+.btn-fill{background:var(--grad);color:#fff;box-shadow:var(--e1)}
+.btn-fill:hover{box-shadow:var(--e2);filter:brightness(1.06)}
+.btn-tonal{background:var(--pc);color:var(--on-pc)}
+.btn-tonal:hover{background:#D3DAEE}
+.btn-outline{background:#fff;color:var(--ink-2);border:1px solid var(--outline)}
+.btn-outline:hover{background:#F3F5FB}
 .btn-icon{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--ink-2);cursor:pointer;transition:background .2s}
-.btn-icon:hover{background:var(--pc);color:var(--navy)}
+.btn-icon:hover{background:var(--pc);color:var(--p)}
+@media (min-width:1024px){.lg-hide{display:none!important}}
 
 /* ---------- Navigation ---------- */
 .nav-item{display:flex;align-items:center;gap:12px;padding:11px 16px;margin-bottom:4px;border-radius:99px;color:var(--ink-2);font-weight:600;font-size:.95rem;cursor:pointer;transition:background .2s}
-.nav-item:hover{background:#f1f2f8;color:var(--navy)}
+.nav-item:hover{background:#F1F2F6;color:var(--ink)}
 .nav-item.hidden{display:none}
-.nav-active{background:var(--navy)!important;color:#fff!important;font-weight:700}
-.bn{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:6px 0;font-size:.72rem;font-weight:600;color:#a3a9c2;cursor:pointer}
-.bn.hidden{display:none}
-.bn-active{color:var(--navy)}
-
-/* ---------- Tabs + trip-style cards ---------- */
-.tabs{display:flex;background:#fff;border-radius:16px;box-shadow:var(--e1);overflow:hidden}
-.tabs button{flex:1;padding:12px 4px;font-size:.88rem;font-weight:600;color:#a3a9c2;border-bottom:2.5px solid #eceef4;white-space:nowrap}
-.tabs button.on{color:var(--navy);border-color:var(--navy)}
-.trip{background:#fff;border-radius:16px;padding:12px 14px;border:1.5px solid transparent;box-shadow:var(--e1);transition:border-color .2s}
-.trip:hover{border-color:var(--navy)}
+.nav-active{background:var(--pc)!important;color:var(--on-pc)!important;font-weight:700}
 
 /* ---------- Status chips ---------- */
-.chip{display:inline-block;padding:4px 12px;border-radius:99px;font-size:.72rem;font-weight:700;white-space:nowrap}
-.chip-ok{background:#dcf5e8;color:#0f7a4a}
-.chip-wait{background:#fff0d3;color:#9a6200}
-.chip-no{background:#ffe1e1;color:#d33a3a}
+.chip{display:inline-block;padding:5px 14px;border-radius:99px;font-size:.75rem;font-weight:700;white-space:nowrap}
+.chip-ok{background:#d1fae5;color:#065f46}
+.chip-wait{background:#fef3c7;color:#78350f}
+.chip-no{background:#ffe4e6;color:#9f1239}
 
 /* ---------- Scrollable tables: หัวตารางค้างอยู่เมื่อเลื่อน ---------- */
-.table-scroll{overflow:auto;max-height:min(62vh,560px);scrollbar-width:thin;scrollbar-color:#c3c8dc transparent;-webkit-overflow-scrolling:touch}
+.table-scroll{overflow:auto;max-height:min(62vh,560px);scrollbar-width:thin;scrollbar-color:#B6C3E6 transparent;-webkit-overflow-scrolling:touch}
 .table-scroll::-webkit-scrollbar{height:8px;width:8px}
-.table-scroll::-webkit-scrollbar-thumb{background:#c3c8dc;border-radius:99px}
+.table-scroll::-webkit-scrollbar-thumb{background:#B6C3E6;border-radius:99px}
 .table-scroll table{width:100%;min-width:640px;border-collapse:separate;border-spacing:0}
-.table-scroll thead th{position:sticky;top:0;z-index:2;padding:11px 14px;background:#eef0f7;color:var(--navy);font-size:.8rem;font-weight:700;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
-.table-scroll tbody td{padding:11px 14px;font-size:.9rem;border-bottom:1px solid #eef0f6;vertical-align:middle;background:#fff}
-.table-scroll tbody tr:hover td{background:#f6f7fb}
+.table-scroll thead th{position:sticky;top:0;z-index:2;padding:11px 14px;background:#EEF1F9;color:#2A3C76;font-size:.8rem;font-weight:700;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
+.table-scroll tbody td{padding:11px 14px;font-size:.9rem;border-bottom:1px solid #E8ECF5;vertical-align:middle;background:#fff}
+.table-scroll tbody tr:hover td{background:#F6F7FB}
 .table-scroll .c{text-align:center}
 .table-scroll .empty{padding:32px;text-align:center;font-weight:700;color:#64748b}
+@media (max-width:639px){
+  .mcards{max-height:min(70vh,640px)}
+  .mcards thead{display:none}
+  .mcards table,.mcards tbody{display:block;min-width:0!important}
+  .mcards tbody tr{display:grid;grid-template-columns:1fr auto;column-gap:10px;row-gap:3px;align-items:center;padding:10px 14px;border-bottom:1px solid #E8ECF5;background:#fff}
+  .mcards tbody td{display:block;padding:0;border:0;min-width:0;max-width:none!important;background:transparent!important;font-size:.875rem}
+  .mcards td:nth-child(1){grid-area:1/1}
+  .mcards td:nth-child(4){grid-area:1/2;justify-self:end;font-size:.95rem}
+  .mcards td:nth-child(4)::after{content:" วัน";font-size:.75rem;font-weight:600;color:#64748b}
+  .mcards td:nth-child(2){grid-area:2/1}
+  .mcards td:nth-child(5){grid-area:2/2;justify-self:end;text-align:right}
+  .mcards td:nth-child(3){grid-area:3/1;color:#64748b;font-size:.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mcards td:nth-child(6){grid-area:3/2;justify-self:end}
+  .mcards td.empty{grid-area:1/1/2/3;padding:24px 0}
+  .mcards .btn-icon{width:32px;height:32px}
+}
 .stick-2 thead th:nth-child(-n+2){z-index:3}
 .stick-2 tbody td:nth-child(-n+2){position:sticky;z-index:1}
 .stick-2 th:first-child,.stick-2 td:first-child{left:0;min-width:84px;width:84px}
@@ -114,6 +123,18 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
   #pdf-template{display:block!important;position:absolute;left:0;top:0;width:100%;padding:40px;background:#fff}
   @page{size:A4;margin:1cm}
 }
+
+/* ---------- Sidebar: น้ำเงินกรมท่า ---------- */
+#sidebar{background:#2A3C76!important;border-color:#2A3C76!important}
+#sidebar [class*="border-"]{border-color:rgba(255,255,255,.14)!important}
+#sidebar .text-slate-800{color:#fff}
+#sidebar .nav-item{color:#C9D3F0}
+#sidebar .nav-item:hover{background:rgba(255,255,255,.1);color:#fff}
+#sidebar .nav-active{background:rgba(255,255,255,.16)!important;color:#fff!important}
+#sidebar .btn-outline{background:transparent;color:#fff;border-color:rgba(255,255,255,.45)}
+#sidebar .btn-outline:hover{background:rgba(255,255,255,.12)}
+#sidebar .btn-icon{color:#fff}
+#sidebar .btn-icon:hover{background:rgba(255,255,255,.14);color:#fff}
 </style>
 </head>
 
@@ -122,31 +143,30 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
 <!-- Loading -->
 <div id="loading" class="fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-sm flex items-center justify-center hidden">
   <div class="bg-white p-8 rounded-[28px] shadow-lg flex flex-col items-center">
-    <div class="w-12 h-12 border-4 border-[#e1e4f0] border-t-[#1f2b6c] rounded-full animate-spin mb-4"></div>
+    <div class="w-12 h-12 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mb-4"></div>
     <p class="font-bold text-slate-700">กำลังประมวลผล...</p>
   </div>
 </div>
 
 <!-- ===================== Login ===================== -->
 <div id="login-page" class="min-h-screen flex items-center justify-center p-4">
-  <div class="w-full max-w-[1000px] flex rounded-[28px] overflow-hidden bg-white border border-[var(--line)] shadow-[0_8px_30px_rgba(31,43,108,.15)]">
+  <div class="w-full max-w-[1000px] flex rounded-[28px] overflow-hidden bg-white border border-[var(--line)] shadow-[0_8px_30px_rgba(42,60,118,.15)]">
     <div class="hidden md:flex md:w-1/2 p-12 flex-col justify-between relative text-white overflow-hidden" style="background:var(--grad)">
       <div class="relative z-10">
         <img src="https://i.postimg.cc/pXHW7T4D/Squre-profile-pink-bg.jpg" alt="Raksakon Hospital" class="w-24 h-24 rounded-2xl border-2 border-white/70 mb-8 object-cover bg-white">
         <h1 class="text-4xl font-extrabold leading-tight mb-4">ระบบการลา<br>โรงพยาบาลรักษ์สกล</h1>
-        <p class="text-white/80 text-lg leading-relaxed">ยื่นใบลา ติดตามสถานะ และดูวันลาคงเหลือได้ในที่เดียว</p>
+        <p class="text-blue-50/90 text-lg leading-relaxed">ยื่นใบลา ติดตามสถานะ และดูวันลาคงเหลือได้ในที่เดียว</p>
       </div>
-      <p class="relative z-10 text-white/60 text-sm">&copy; 2026 Raksakon Information System</p>
-      <div class="absolute -bottom-16 -right-16 w-72 h-72 rounded-full bg-white/10"></div>
-      <div class="absolute top-20 -right-6 w-32 h-32 rounded-full" style="background:rgba(255,107,107,.55)"></div>
+      <p class="relative z-10 text-blue-100 text-sm">&copy; 2026 Raksakon Information System</p>
+      <div class="absolute -bottom-16 -right-16 w-72 h-72 rounded-full bg-white/15"></div>
+      <div class="absolute top-16 -right-8 w-40 h-40 rounded-full bg-white/10"></div>
     </div>
 
     <div class="w-full md:w-1/2 p-8 sm:p-12 lg:p-16 flex flex-col justify-center">
-      <div class="md:hidden -mx-8 -mt-8 mb-8 px-6 pt-9 pb-7 text-center text-white rounded-b-[28px]" style="background:var(--grad)">
-        <img src="https://i.postimg.cc/pXHW7T4D/Squre-profile-pink-bg.jpg" alt="Raksakon Hospital" class="w-16 h-16 mx-auto rounded-2xl border-2 border-white/70 object-cover bg-white">
-        <p class="mt-3 font-bold">ระบบการลา โรงพยาบาลรักษ์สกล</p>
+      <div class="md:hidden flex justify-center mb-8">
+        <img src="https://i.postimg.cc/pXHW7T4D/Squre-profile-pink-bg.jpg" alt="Raksakon Hospital" class="w-20 h-20 rounded-2xl border border-slate-100 object-cover bg-white">
       </div>
-      <h2 class="text-3xl font-extrabold text-navy mb-2">เข้าสู่ระบบ</h2>
+      <h2 class="text-3xl font-extrabold text-slate-800 mb-2">เข้าสู่ระบบ</h2>
       <p class="text-slate-500 font-medium mb-10">กรอกชื่อผู้ใช้งานและรหัสผ่านของคุณ</p>
       <div class="space-y-5">
         <div>
@@ -171,10 +191,11 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
 <!-- ===================== App ===================== -->
 <div id="main-app" class="hidden flex app-shell w-full overflow-hidden">
 
-  <aside id="sidebar" class="bg-white border-r border-[var(--line)] w-[240px] flex-shrink-0 hidden lg:flex flex-col">
+  <aside id="sidebar" class="bg-white/95 border-r border-[var(--line)] w-[240px] flex-shrink-0 flex flex-col absolute inset-y-0 left-0 -translate-x-full lg:relative lg:translate-x-0 transition-transform duration-300 z-50">
     <div class="h-[72px] flex items-center px-5 border-b border-[var(--line)]">
       <img src="https://i.postimg.cc/pXHW7T4D/Squre-profile-pink-bg.jpg" alt="Logo" class="w-10 h-10 rounded-xl object-cover border border-slate-100 mr-4 bg-white">
-      <div class="font-extrabold text-navy text-xl leading-tight">Leave<br>Flow</div>
+      <div class="font-extrabold text-slate-800 text-xl leading-tight">Leave<br>Flow</div>
+      <button type="button" onclick="setSidebar(false)" class="btn-icon lg-hide ml-auto" aria-label="ปิดเมนู"><span data-i="x" data-c="w-6 h-6"></span></button>
     </div>
 
     <nav class="flex-1 overflow-y-auto px-3 py-6">
@@ -187,23 +208,24 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
       <button type="button" onclick="handleLogout()" class="btn btn-outline w-full"><span data-i="logout"></span>ออกจากระบบ</button>
     </div>
   </aside>
+  <div id="sidebar-overlay" onclick="setSidebar(false)" class="fixed inset-0 bg-slate-900/40 z-40 hidden lg:hidden"></div>
 
   <div class="flex-1 flex flex-col min-w-0 app-shell">
-    <header class="h-[72px] flex items-center justify-between px-4 sm:px-8 flex-shrink-0 text-white rounded-b-[28px]" style="background:var(--grad)">
+    <header class="h-[72px] flex items-center justify-between px-5 sm:px-8 flex-shrink-0">
       <div class="flex items-center min-w-0">
-        <img src="https://i.postimg.cc/pXHW7T4D/Squre-profile-pink-bg.jpg" alt="Logo" class="lg:hidden w-9 h-9 rounded-xl object-cover bg-white mr-3 flex-shrink-0">
-        <h2 id="page-title" class="text-lg font-bold truncate">แดชบอร์ด</h2>
+        <button type="button" onclick="setSidebar(true)" class="btn-icon lg-hide mr-2" aria-label="เปิดเมนู"><span data-i="menu" data-c="w-6 h-6"></span></button>
+        <h2 id="page-title" class="text-lg font-bold text-slate-800 truncate">แดชบอร์ด</h2>
       </div>
-      <div class="flex items-center gap-2.5 bg-white/10 pl-4 pr-1.5 py-1.5 rounded-full flex-shrink-0 max-w-[60%]">
-        <div class="text-right leading-tight min-w-0">
-          <p class="text-sm font-bold truncate" id="display-name">--</p>
-          <p class="text-xs text-white/70 truncate" id="display-dept">--</p>
+      <div class="flex items-center gap-3 bg-white/95 pl-5 pr-2 py-2 rounded-full border border-[var(--line)] shadow-sm flex-shrink-0">
+        <div class="text-right leading-tight">
+          <p class="text-sm font-bold text-slate-800" id="display-name">--</p>
+          <p class="text-[13px] font-medium text-slate-500" id="display-dept">--</p>
         </div>
-        <div class="w-9 h-9 rounded-full flex items-center justify-center text-white flex-shrink-0" style="background:var(--coral)"><span data-i="user" data-c="w-5 h-5"></span></div>
+        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white" style="background:var(--grad)"><span data-i="user" data-c="w-5 h-5"></span></div>
       </div>
     </header>
 
-    <main class="flex-1 overflow-x-hidden overflow-y-auto px-4 sm:px-8 pt-4 sm:pt-5 pb-24 lg:pb-12">
+    <main class="flex-1 overflow-x-hidden overflow-y-auto px-4 sm:px-8 pb-12">
 
       <!-- ===== View: Dashboard ===== -->
       <div id="view-user" class="space-y-3 sm:space-y-5 max-w-[1400px] mx-auto">
@@ -215,10 +237,10 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
         </div>
         <div class="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
           <div class="card card-hero p-4 sm:p-5 col-span-3 sm:col-span-1 flex items-center justify-between sm:block">
-            <p class="font-bold text-white/90 relative z-10">วันลาคงเหลือทั้งหมด</p>
+            <p class="font-bold text-blue-50 relative z-10">วันลาคงเหลือทั้งหมด</p>
             <div class="flex items-end gap-2 sm:mt-4 relative z-10">
               <span class="text-4xl sm:text-5xl font-extrabold leading-none" id="quota-total-remain">0</span>
-              <span class="text-base sm:text-lg font-bold text-white/70">วัน</span>
+              <span class="text-base sm:text-lg font-bold text-blue-100">วัน</span>
             </div>
           </div>
           <div id="stat-cards" class="contents"></div>
@@ -227,7 +249,7 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-5">
           <div class="lg:col-span-2 card p-4 sm:p-6">
-            <h3 class="text-lg font-bold text-navy mb-3 sm:mb-6">ยื่นแบบคำขอการลา</h3>
+            <h3 class="text-lg font-bold text-slate-800 mb-3 sm:mb-6">ยื่นแบบคำขอการลา</h3>
             <div class="mb-4 sm:mb-6 flex flex-wrap gap-x-5 gap-y-2">
               <label class="flex items-center gap-3 cursor-pointer"><input type="radio" name="u-format" id="u-daily" checked onchange="toggleFormat('u')"><span class="font-bold text-slate-700">ลาเต็มวัน / หลายวัน</span></label>
               <label class="flex items-center gap-3 cursor-pointer"><input type="radio" name="u-format" id="u-hourly" onchange="toggleFormat('u')"><span class="font-bold text-slate-700">ลารายชั่วโมง</span></label>
@@ -238,10 +260,10 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
               <div><label class="lbl" for="u-start">เริ่มวันที่</label><input type="date" id="u-start"></div>
               <div>
                 <div id="u-end-wrap"><label class="lbl" for="u-end">ถึงวันที่</label><input type="date" id="u-end"></div>
-                <div id="u-hours-wrap" class="hidden"><label class="lbl" for="u-hours">จำนวนชั่วโมง <span class="font-normal text-slate-400">(สูงสุด 8)</span></label><input type="number" id="u-hours" placeholder="เช่น 2 หรือ 1.5" min="0.5" max="8" step="0.5"></div>
+                <div id="u-hours-wrap" class="hidden"><label class="lbl">ช่วงเวลาที่ลา <span class="font-normal text-slate-400">(สูงสุด 8 ชม.)</span></label><div class="flex gap-2 items-center"><input type="time" id="u-from"><span class="font-bold text-slate-400">-</span><input type="time" id="u-to"></div></div>
               </div>
-              <div id="u-cert-wrap" class="md:col-span-2 hidden p-5 rounded-2xl bg-[#eef0f7] border border-[#dfe3f1]">
-                <label class="lbl flex items-center gap-2 !text-[#1f2b6c]" for="u-cert"><span data-i="clip"></span>แนบใบรับรองแพทย์<span class="chip bg-white text-coral shadow-sm">บังคับเมื่อลาป่วย 3 วันขึ้นไป</span></label>
+              <div id="u-cert-wrap" class="md:col-span-2 hidden p-5 rounded-2xl bg-blue-50 border border-blue-100">
+                <label class="lbl flex items-center gap-2 !text-blue-900" for="u-cert"><span data-i="clip"></span>แนบใบรับรองแพทย์<span class="chip bg-white text-blue-700 shadow-sm">บังคับเมื่อลาป่วย 3 วันขึ้นไป</span></label>
                 <input type="file" id="u-cert" accept="image/*,.pdf">
               </div>
               <div class="md:col-span-2 flex justify-end">
@@ -253,16 +275,20 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
           <div class="card p-4 lg:p-6 flex items-center gap-5 lg:flex-col">
             <div class="relative w-[96px] h-[96px] lg:w-[170px] lg:h-[170px] flex-shrink-0 lg:order-2 lg:my-auto"><canvas id="leaveChart"></canvas></div>
             <div class="lg:contents">
-              <h3 class="font-bold text-navy mb-2 lg:mb-4 lg:self-start lg:order-1">สัดส่วนการลา (ใช้ไปแล้ว)</h3>
+              <h3 class="font-bold text-slate-800 mb-2 lg:mb-4 lg:self-start lg:order-1">สัดส่วนการลา (ใช้ไปแล้ว)</h3>
               <div id="chart-legend" class="flex flex-col gap-1.5 lg:flex-row lg:flex-wrap lg:justify-center lg:gap-x-4 lg:mt-6 lg:order-3"></div>
             </div>
           </div>
         </div>
 
-        <div>
-          <h3 class="text-lg font-bold text-navy mb-2.5 px-1">ประวัติการลาของคุณ</h3>
-          <div id="hist-tabs" class="tabs"></div>
-          <div id="history-list" class="space-y-2.5 mt-3 overflow-auto" style="max-height:min(68vh,640px)"></div>
+        <div class="card">
+          <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-[var(--line)]"><h3 class="text-lg font-bold text-slate-800">ประวัติการลาของคุณ</h3></div>
+          <div class="table-scroll mcards">
+            <table>
+              <thead><tr><th>วันที่ลา</th><th>ประเภท</th><th>เหตุผล</th><th class="c">จำนวนวัน</th><th class="c">สถานะ</th><th class="c">ใบลา</th></tr></thead>
+              <tbody id="history-body"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -270,8 +296,8 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
       <div id="view-hod" class="hidden max-w-[1400px] mx-auto">
         <div class="card">
           <div class="px-6 py-4 border-b border-[var(--line)] flex items-center gap-3">
-            <div class="icon-tile" style="background:var(--pc);color:var(--navy)"><span data-i="check" data-c="w-6 h-6"></span></div>
-            <h3 class="text-lg font-bold text-navy">รายการรอพิจารณาอนุมัติ</h3>
+            <div class="icon-tile" style="background:var(--pc);color:var(--p)"><span data-i="check" data-c="w-6 h-6"></span></div>
+            <h3 class="text-lg font-bold text-slate-800">รายการรอพิจารณาอนุมัติ</h3>
           </div>
           <div class="table-scroll">
             <table style="min-width:960px">
@@ -286,8 +312,8 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
       <div id="view-hr" class="hidden space-y-5 max-w-[1400px] mx-auto">
 
         <div class="card p-5 sm:p-6">
-          <h3 class="text-lg font-bold text-navy mb-6 flex items-center gap-3">
-            <span class="icon-tile" style="background:var(--pc);color:var(--navy)"><span data-i="plus" data-c="w-6 h-6"></span></span>
+          <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-3">
+            <span class="icon-tile" style="background:var(--pc);color:var(--p)"><span data-i="plus" data-c="w-6 h-6"></span></span>
             บันทึกข้อมูลการลา (ฉุกเฉิน / ย้อนหลัง)
           </h3>
           <div class="mb-6 flex gap-5">
@@ -300,7 +326,7 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
             <div><label class="lbl" for="a-start">วันเริ่ม</label><input type="date" id="a-start"></div>
             <div>
               <div id="a-end-wrap"><label class="lbl" for="a-end">วันสิ้นสุด</label><input type="date" id="a-end"></div>
-              <div id="a-hours-wrap" class="hidden"><label class="lbl" for="a-hours">ชั่วโมงลา</label><input type="number" id="a-hours" placeholder="เช่น 2" min="0.5" max="8" step="0.5"></div>
+              <div id="a-hours-wrap" class="hidden"><label class="lbl">ช่วงเวลาที่ลา</label><div class="flex gap-2 items-center"><input type="time" id="a-from"><span class="font-bold text-slate-400">-</span><input type="time" id="a-to"></div></div>
             </div>
             <div class="sm:col-span-2 lg:col-span-4"><label class="lbl" for="a-reason">เหตุผล</label><input type="text" id="a-reason" placeholder="ระบุเหตุผล"></div>
             <div class="sm:col-span-2"><button type="button" onclick="submitLeaveByAdmin()" class="btn btn-fill btn-lg w-full">บันทึกเข้าสู่ระบบ</button></div>
@@ -309,10 +335,10 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
 
         <!-- สรุปโควต้า -->
         <div class="card">
-          <div class="px-5 sm:px-6 py-4 border-b border-[var(--line)] flex flex-col lg:flex-row lg:items-center justify-between gap-4 cursor-pointer select-none hover:bg-[#f4f5fa] transition" onclick="toggleSection('emp')">
+          <div class="px-5 sm:px-6 py-4 border-b border-[var(--line)] flex flex-col lg:flex-row lg:items-center justify-between gap-4 cursor-pointer select-none hover:bg-blue-50/40 transition" onclick="toggleSection('emp')">
             <div class="flex items-center gap-3">
-              <span class="icon-tile" style="background:var(--pc);color:var(--navy)"><span data-i="pie" data-c="w-6 h-6"></span></span>
-              <h3 class="text-lg font-bold text-navy">สรุปโควต้าการลาของพนักงาน</h3>
+              <span class="icon-tile" style="background:var(--pc);color:var(--p)"><span data-i="pie" data-c="w-6 h-6"></span></span>
+              <h3 class="text-lg font-bold text-slate-800">สรุปโควต้าการลาของพนักงาน</h3>
               <span id="emp-icon" class="inline-block text-slate-400 transition-transform duration-300 rotate-180" data-i="chevron" data-c="w-6 h-6"></span>
             </div>
             <div class="flex flex-wrap items-center gap-3" onclick="event.stopPropagation()">
@@ -329,7 +355,7 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
               </table>
             </div>
             <div id="emp-history" class="hidden border-t border-[var(--line)]">
-              <div class="px-8 py-4 bg-[#eef0f7] font-bold text-[#1f2b6c] flex items-center gap-2"><span data-i="list"></span>รายละเอียดประวัติการลาของพนักงาน</div>
+              <div class="px-8 py-4 bg-blue-50/60 font-bold text-blue-900 flex items-center gap-2"><span data-i="list"></span>รายละเอียดประวัติการลาของพนักงาน</div>
               <div class="table-scroll" style="max-height:min(50vh,440px)">
                 <table style="min-width:640px">
                   <thead><tr><th>วันที่ลา</th><th>ประเภท</th><th>เหตุผล</th><th class="c">จำนวนวัน</th><th class="c">สถานะ</th></tr></thead>
@@ -342,10 +368,10 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
 
         <!-- รายงานประจำเดือน -->
         <div class="card">
-          <div class="px-5 sm:px-6 py-4 border-b border-[var(--line)] flex flex-col lg:flex-row lg:items-center justify-between gap-4 cursor-pointer select-none hover:bg-[#f4f5fa] transition" onclick="toggleSection('month')">
+          <div class="px-5 sm:px-6 py-4 border-b border-[var(--line)] flex flex-col lg:flex-row lg:items-center justify-between gap-4 cursor-pointer select-none hover:bg-blue-50/40 transition" onclick="toggleSection('month')">
             <div class="flex items-center gap-3">
-              <span class="icon-tile" style="background:var(--pc);color:var(--navy)"><span data-i="calendar" data-c="w-6 h-6"></span></span>
-              <h3 class="text-lg font-bold text-navy">รายงานข้อมูลการลาประจำเดือน</h3>
+              <span class="icon-tile" style="background:var(--pc);color:var(--p)"><span data-i="calendar" data-c="w-6 h-6"></span></span>
+              <h3 class="text-lg font-bold text-slate-800">รายงานข้อมูลการลาประจำเดือน</h3>
               <span id="month-icon" class="inline-block text-slate-400 transition-transform duration-300 rotate-180" data-i="chevron" data-c="w-6 h-6"></span>
             </div>
             <div class="flex flex-wrap items-center gap-3" onclick="event.stopPropagation()">
@@ -368,16 +394,6 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
     </main>
   </div>
 </div>
-
-<!-- แถบเมนูล่าง (มือถือ) -->
-<nav id="bottom-nav" class="hidden fixed bottom-0 inset-x-0 z-40 bg-white rounded-t-[24px] shadow-[0_-4px_20px_rgba(31,43,108,.12)] px-3 pt-1.5 lg:!hidden" style="padding-bottom:max(8px,env(safe-area-inset-bottom))">
-  <div class="flex">
-    <button type="button" id="bn-user" class="bn bn-active" onclick="switchTab('user')"><span data-i="home" data-c="w-6 h-6"></span>หน้าหลัก</button>
-    <button type="button" id="bn-hod" class="bn hidden" onclick="switchTab('hod')"><span data-i="check" data-c="w-6 h-6"></span>พิจารณา</button>
-    <button type="button" id="bn-hr" class="bn hidden" onclick="switchTab('hr')"><span data-i="users" data-c="w-6 h-6"></span>HR</button>
-    <button type="button" class="bn" onclick="handleLogout()"><span data-i="logout" data-c="w-6 h-6"></span>ออก</button>
-  </div>
-</nav>
 
 <!-- แบบฟอร์มใบลา (พิมพ์) -->
 <div id="pdf-template">
@@ -409,10 +425,10 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
 
 <script>
 /* =========================================================
- * ตั้งค่า: ลิงก์ Web app (ลงท้าย /exec) ใช้เฉพาะเมื่อโฮสต์หน้านี้ที่อื่น เช่น GitHub Pages
- * ถ้าเปิดผ่านลิงก์ของ Apps Script โดยตรง ปล่อยว่างไว้ได้
+ * ตั้งค่า: ลิงก์ Web app (ลงท้าย /exec) ใช้เมื่อโฮสต์หน้านี้ที่อื่น เช่น GitHub Pages
+ * ถ้าเปิดผ่านลิงก์ของ Apps Script โดยตรง ระบบใช้ google.script.run เอง ไม่เกี่ยวกับค่านี้
  * ========================================================= */
-const API_URL = 'https://script.google.com/macros/s/AKfycbzZvLTxd5MtGo7_5BQISe8b7KU-759zTWbHeIwsnhlGXI-nte9OwWvfporBCtoeAGk3/exec'; // เช่น 'https://script.google.com/macros/s/AKfycb.../exec'
+const API_URL = 'https://script.google.com/macros/s/AKfycbzZvLTxd5MtGo7_5BQISe8b7KU-759zTWbHeIwsnhlGXI-nte9OwWvfporBCtoeAGk3/exec';
 
 /* =========================================================
  * Constants & helpers
@@ -421,9 +437,9 @@ const LEAVE_TYPES = ['ลาป่วย', 'ลากิจ', 'ลากิจ�
 const QUOTA_KEY = { 'ลาป่วย': 'sick', 'ลากิจ': 'personal', 'ลาพักร้อน': 'vacation' };
 // [key, label, icon, tile-bg, tile-fg, chart-color]
 const QUOTA_DEFS = [
-  ['sick', 'ลาป่วย', 'heart', '#ffe3e3', '#ff6b6b', '#ff6b6b'],
-  ['vacation', 'ลาพักร้อน', 'sun', '#e3e6f5', '#1f2b6c', '#1f2b6c'],
-  ['personal', 'ลากิจ', 'briefcase', '#e8ebfa', '#6573c3', '#8e9bd8']
+  ['sick', 'ลาป่วย', 'heart', '#FFE3E4', '#D6393F', '#FE696E'],
+  ['vacation', 'ลาพักร้อน', 'sun', '#E8ECF7', '#2A3C76', '#2A3C76'],
+  ['personal', 'ลากิจ', 'briefcase', '#E9EEF9', '#4B63A6', '#89A0CF']
 ];
 const STATE = { approved: ['อนุมัติ', 'chip-ok'], rejected: ['ปฏิเสธ', 'chip-no'], pending: ['รอพิจารณา', 'chip-wait'] };
 const TITLES = { user: 'แดชบอร์ด', hod: 'รายการรอพิจารณาอนุมัติ', hr: 'จัดการข้อมูลส่วนกลาง (HR)' };
@@ -465,16 +481,16 @@ const dayDiff = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 864e5);
 const safeUrl = u => /^https?:\/\//i.test(u || '') ? esc(u) : '';
 const badge = l => { const s = STATE[l.state] || STATE.pending; return '<span class="chip ' + s[1] + '">' + s[0] + '</span>'; };
 const emptyRow = (n, msg) => '<tr><td colspan="' + n + '" class="empty">' + msg + '</td></tr>';
-const certLink = l => safeUrl(l.medical_cert) ? '<br><a href="' + safeUrl(l.medical_cert) + '" target="_blank" rel="noopener" class="inline-flex items-center gap-1 mt-1 text-xs font-bold text-navy hover:underline">' + ic('clip', 'w-4 h-4') + 'ดูเอกสาร</a>' : '';
+const certLink = l => safeUrl(l.medical_cert) ? '<br><a href="' + safeUrl(l.medical_cert) + '" target="_blank" rel="noopener" class="inline-flex items-center gap-1 mt-1 text-xs font-bold text-blue-700 hover:underline">' + ic('clip', 'w-4 h-4') + 'ดูเอกสาร</a>' : '';
 const pos = x => x.position || x.department || '-';
 const empLabel = u => (u.id ? u.id + ' · ' : '') + (u.name || '-') + ' (' + pos(u) + ')';
 const opt = (v, t) => '<option value="' + esc(v) + '">' + esc(t) + '</option>';
 
-const S = { histTab: 'all', token: null, user: null, history: [], years: [], leaves: [], users: [], hrYears: [], curYear: 0, chart: null };
+const S = { token: null, user: null, history: [], years: [], leaves: [], users: [], hrYears: [], curYear: 0, chart: null };
 const yLabel = y => 'พ.ศ. ' + (+y + 543);
 
 const swal = o => window.Swal ? Swal.fire(o) : alert([o.title, o.text].filter(Boolean).join('\n'));
-const warn = (title, text) => swal({ icon: 'warning', title: title, text: text, confirmButtonText: 'ตกลง', confirmButtonColor: '#1f2b6c' });
+const warn = (title, text) => swal({ icon: 'warning', title: title, text: text, confirmButtonText: 'ตกลง', confirmButtonColor: '#2A3C76' });
 const toast = (title, text) => swal({ icon: 'success', title: title, text: text, showConfirmButton: false, timer: 1600 });
 const busy = on => $('loading').classList.toggle('hidden', !on);
 
@@ -555,9 +571,6 @@ function handleLogin() {
     const role = S.user.role, canApprove = ['Admin', 'HR', 'HOD'].indexOf(role) > -1;
     $('btn-hod').classList.toggle('hidden', !canApprove);
     $('btn-hr').classList.toggle('hidden', ['Admin', 'HR'].indexOf(role) < 0);
-    $('bn-hod').classList.toggle('hidden', !canApprove);
-    $('bn-hr').classList.toggle('hidden', ['Admin', 'HR'].indexOf(role) < 0);
-    $('bottom-nav').classList.remove('hidden');
     $('login-page').classList.add('hidden');
     $('main-app').classList.remove('hidden');
     renderDashboard();
@@ -570,7 +583,7 @@ function handleLogout() {
   const go = () => { if (S.token && (inGAS() || API_URL)) rpc('logout', [S.token]).catch(() => {}); resetSession(); };
   if (!window.Swal) return confirm('คุณต้องการออกจากระบบหรือไม่?') && go();
   Swal.fire({ title: 'ออกจากระบบ', text: 'คุณต้องการออกจากระบบหรือไม่?', icon: 'question', showCancelButton: true,
-    confirmButtonText: 'ยืนยัน', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#1f2b6c' })
+    confirmButtonText: 'ยืนยัน', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#2A3C76' })
     .then(r => r.isConfirmed && go());
 }
 
@@ -580,21 +593,24 @@ function resetSession() {
   $('username').value = ''; $('password').value = ''; $('password').type = 'password';
   $('eye').innerHTML = ic('eye', 'w-6 h-6');
   $('btn-hod').classList.add('hidden'); $('btn-hr').classList.add('hidden');
-  $('bn-hod').classList.add('hidden'); $('bn-hr').classList.add('hidden'); $('bottom-nav').classList.add('hidden');
-  S.histTab = 'all';
   $('main-app').classList.add('hidden'); $('login-page').classList.remove('hidden');
 }
 
 /* =========================================================
  * Navigation
  * ========================================================= */
+function setSidebar(open) {
+  $('sidebar').classList.toggle('-translate-x-full', !open);
+  $('sidebar-overlay').classList.toggle('hidden', !open);
+}
+
 function switchTab(tab) {
   $('page-title').textContent = TITLES[tab];
   ['user', 'hod', 'hr'].forEach(t => {
     $('view-' + t).classList.toggle('hidden', t !== tab);
     $('btn-' + t).classList.toggle('nav-active', t === tab);
-    $('bn-' + t).classList.toggle('bn-active', t === tab);
   });
+  setSidebar(false);
   if (tab === 'user') return;
   api('getAllLeavesForHR', [], res => {
     S.leaves = res.data; S.users = res.users || []; S.hrYears = res.years || []; S.curYear = res.year;
@@ -628,11 +644,11 @@ function renderDashboard() {
     return '<div class="card p-3 sm:p-5">' +
       '<div class="flex justify-between items-start"><div class="min-w-0">' +
         '<p class="cap flex items-center gap-1.5 text-xs sm:text-sm whitespace-nowrap"><span class="sm:hidden" style="color:' + d[4] + '">' + ic(d[2], 'w-4 h-4') + '</span>' + d[1] + '<span class="hidden sm:inline"> (วัน)</span></p>' +
-        '<div class="flex items-baseline gap-1 sm:gap-2 mt-1.5 sm:mt-4"><span class="text-xl sm:text-3xl font-bold text-navy">' + fmtDays(used) + '</span>' +
+        '<div class="flex items-baseline gap-1 sm:gap-2 mt-1.5 sm:mt-4"><span class="text-xl sm:text-3xl font-bold text-slate-800">' + fmtDays(used) + '</span>' +
         '<span class="text-slate-300 sm:text-xl">/</span><span class="text-sm sm:text-xl font-bold text-slate-500">' + fmtDays(total) + '</span></div>' +
         '<p class="hidden sm:block text-xs font-semibold text-slate-400 mt-2">ใช้ไป / สิทธิ์ทั้งหมด</p></div>' +
       '<div class="icon-tile hidden sm:flex" style="background:' + d[3] + ';color:' + d[4] + '">' + ic(d[2], 'w-6 h-6') + '</div></div>' +
-      '<div class="bar mt-2 sm:mt-4"><span style="width:' + pct + '%;background:' + d[5] + '"></span></div></div>';
+      '<div class="bar mt-2 sm:mt-4"><span style="width:' + pct + '%"></span></div></div>';
   }).join('');
 
   drawChart();
@@ -660,33 +676,17 @@ function changeYear() {
   });
 }
 
-const HIST_TABS = [['all', 'ทั้งหมด'], ['pending', 'รอพิจารณา'], ['approved', 'อนุมัติ'], ['rejected', 'ปฏิเสธ']];
-function setHistTab(t) { S.histTab = t; renderHistory(); }
-
 function renderHistory() {
-  const count = k => k === 'all' ? S.history.length : S.history.filter(l => l.state === k).length;
-  $('hist-tabs').innerHTML = HIST_TABS.map(t =>
-    '<button type="button" class="' + (S.histTab === t[0] ? 'on' : '') + '" onclick="setHistTab(\'' + t[0] + '\')">' + t[1] + ' (' + count(t[0]) + ')</button>').join('');
-
-  const list = S.history.filter(l => S.histTab === 'all' || l.state === S.histTab);
-  $('history-list').innerHTML = !list.length
-    ? '<div class="card p-8 text-center font-bold text-slate-400">ไม่มีรายการ</div>'
-    : list.map(l => {
-      const def = QUOTA_DEFS.find(d => d[0] === (QUOTA_KEY[l.type] || 'personal'));
-      const note = l.hod_remark && l.hod_remark !== '-' ? '<div class="text-xs font-semibold text-slate-500 mt-1.5">💬 ' + esc(l.hod_remark) + '</div>' : '';
-      return '<div class="trip">' +
-        '<div class="flex items-start gap-3">' +
-          '<div class="icon-tile" style="width:38px;height:38px;border-radius:12px;background:' + def[3] + ';color:' + def[4] + '">' + ic(def[2], 'w-5 h-5') + '</div>' +
-          '<div class="flex-1 min-w-0">' +
-            '<div class="flex justify-between gap-2"><p class="font-bold text-navy">' + esc(l.type) + '</p><p class="text-[11px] text-slate-400 whitespace-nowrap pt-0.5">' + dateRange(l) + '</p></div>' +
-            '<p class="text-xs text-slate-500 truncate" title="' + esc(l.reason) + '">' + esc(l.reason || '-') + '</p>' +
-          '</div></div>' +
-        '<div class="flex items-center justify-between gap-2 mt-2.5 pt-2.5 border-t border-dashed border-[#e1e4f0]">' +
-          '<div class="min-w-0">' + badge(l) + '<span class="ml-2">' + certLink(l).replace('<br>', '') + '</span>' + note + '</div>' +
-          '<div class="flex items-center gap-1 flex-shrink-0"><span class="text-coral font-extrabold text-lg">' + fmtDays(l.days) + '</span><span class="text-xs font-semibold text-slate-400 mr-1">วัน</span>' +
-            '<button type="button" class="btn-icon" title="พิมพ์ใบลา" onclick="printPDF(\'' + esc(l.id) + '\')">' + ic('printer') + '</button></div>' +
-        '</div></div>';
-    }).join('');
+  $('history-body').innerHTML = !S.history.length ? emptyRow(6, 'ยังไม่มีประวัติการลา') : S.history.map(l => {
+    const note = l.hod_remark && l.hod_remark !== '-' ? '<div class="text-xs font-semibold text-slate-500 mt-1.5">💬 ' + esc(l.hod_remark) + '</div>' : '';
+    return '<tr>' +
+      '<td class="font-semibold whitespace-nowrap">' + dateRange(l) + '</td>' +
+      '<td><span class="font-semibold">' + esc(l.type) + '</span>' + certLink(l) + '</td>' +
+      '<td class="text-slate-600 max-w-[220px] truncate" title="' + esc(l.reason) + '">' + esc(l.reason || '-') + '</td>' +
+      '<td class="c font-bold text-blue-700 text-base">' + fmtDays(l.days) + '</td>' +
+      '<td class="c">' + badge(l) + note + '</td>' +
+      '<td class="c"><button type="button" class="btn-icon" title="พิมพ์ใบลา" onclick="printPDF(\'' + esc(l.id) + '\')">' + ic('printer') + '</button></td></tr>';
+  }).join('');
 }
 
 /* =========================================================
@@ -705,7 +705,7 @@ function toggleCert() {
 }
 
 function resetForm(p) {
-  ['reason', 'start', 'end', 'hours'].forEach(k => { $(p + '-' + k).value = ''; });
+  ['reason', 'start', 'end', 'from', 'to'].forEach(k => { $(p + '-' + k).value = ''; });
   $(p + '-type').selectedIndex = 0;
   $(p + '-daily').checked = true;
   toggleFormat(p);
@@ -720,11 +720,15 @@ function readLeaveForm(p, enforceRules) {
   if (!type) throw new Error('โปรดเลือกประเภทการลา');
   if (!start || !reason) throw new Error('กรุณาระบุวันที่และเหตุผลประกอบ');
 
+  let times = {};
   if ($(p + '-hourly').checked) {
-    const h = parseFloat(v('hours'));
-    if (!(h > 0 && h <= 8)) throw new Error('กรุณาระบุจำนวนชั่วโมงให้ถูกต้อง (0.5 - 8)');
+    const from = v('from'), to = v('to'), tm = t => +t.slice(0, 2) * 60 + +t.slice(3, 5);
+    if (!from || !to) throw new Error('กรุณาระบุเวลาเริ่มและเวลาสิ้นสุดการลา');
+    const h = (tm(to) - tm(from)) / 60;
+    if (!(h > 0 && h <= 8)) throw new Error('เวลาสิ้นสุดต้องหลังเวลาเริ่ม และลาไม่เกิน 8 ชั่วโมง');
     days = Math.round(h / 8 * 10000) / 10000;
-    reason += ' (ลา ' + h + ' ชม.)';
+    reason += ' (ลา ' + from + '-' + to + ' น. ' + h + ' ชม.)';
+    times = { start_time: from, end_time: to };
   } else {
     end = v('end');
     if (!end) throw new Error('กรุณาระบุวันที่สิ้นสุด');
@@ -737,7 +741,7 @@ function readLeaveForm(p, enforceRules) {
     if (type === 'ลากิจ' && lead < 3) throw new Error('ลากิจต้องยื่นล่วงหน้าอย่างน้อย 3 วัน');
     if (type === 'ลาพักร้อน' && lead < 30) throw new Error('ลาพักร้อนต้องยื่นล่วงหน้าอย่างน้อย 30 วัน');
   }
-  return { type: type, start_date: start, end_date: end, days: days, reason: reason };
+  return Object.assign({ type: type, start_date: start, end_date: end, days: days, reason: reason }, times);
 }
 
 const readFile = f => new Promise((ok, no) => {
@@ -787,11 +791,11 @@ function renderHOD() {
       '<td class="font-semibold whitespace-nowrap">' + dateRange(l) + '</td>' +
       '<td><span class="font-semibold">' + esc(l.type) + '</span>' + certLink(l) + '</td>' +
       '<td class="text-slate-600 min-w-[180px] max-w-[260px] break-words">' + esc(l.reason || '-') + '</td>' +
-      '<td class="c font-bold text-coral text-base">' + fmtDays(l.days) + '</td>' +
+      '<td class="c font-bold text-blue-700 text-base">' + fmtDays(l.days) + '</td>' +
       '<td><input type="text" id="rem-' + id + '" placeholder="ระบุเหตุผล (ถ้ามี)" style="height:44px;min-width:150px"></td>' +
       '<td class="c whitespace-nowrap"><div class="inline-flex gap-2">' +
-        '<button type="button" class="btn btn-navy btn-sm" onclick="decide(\'' + id + '\',\'Approved\')">อนุมัติ</button>' +
-        '<button type="button" class="btn btn-fill btn-sm" onclick="decide(\'' + id + '\',\'Rejected\')">ปฏิเสธ</button>' +
+        '<button type="button" class="btn btn-fill btn-sm" onclick="decide(\'' + id + '\',\'Approved\')">อนุมัติ</button>' +
+        '<button type="button" class="btn btn-outline btn-sm" onclick="decide(\'' + id + '\',\'Rejected\')">ปฏิเสธ</button>' +
       '</div></td></tr>';
   }).join('');
 }
@@ -805,7 +809,7 @@ function decide(id, status) {
   });
   if (!window.Swal) return run();
   Swal.fire({ title: approve ? 'ยืนยันการอนุมัติ?' : 'ยืนยันการปฏิเสธ?', icon: 'question', showCancelButton: true,
-    confirmButtonText: 'ยืนยัน', cancelButtonText: 'ยกเลิก', confirmButtonColor: approve ? '#1f2b6c' : '#ff6b6b' })
+    confirmButtonText: 'ยืนยัน', cancelButtonText: 'ยกเลิก', confirmButtonColor: approve ? '#2A3C76' : '#D6393F' })
     .then(r => r.isConfirmed && run());
 }
 
@@ -863,7 +867,7 @@ function renderEmpSummary() {
     const cell = (k, total) => '<td class="c"><span class="font-bold text-base text-slate-900">' + fmtDays(x[k]) + '</span><span class="text-sm font-bold text-slate-500"> / ' + fmtDays(total) + '</span></td>';
     return '<tr><td class="font-semibold">' + esc(u.id) + '</td><td class="font-bold">' + esc(u.name || '-') + '</td><td class="text-slate-600">' + esc(pos(u)) + '</td>' +
       cell('sick', u.quota_s) + cell('personal', u.quota_l) + cell('vacation', qV(u)) +
-      '<td class="c font-bold text-navy text-lg">' + fmtDays(x.sick + x.personal + x.vacation) + '</td></tr>';
+      '<td class="c font-bold text-blue-700 text-lg">' + fmtDays(x.sick + x.personal + x.vacation) + '</td></tr>';
   }).join('');
 
   if (id !== 'all') {
@@ -872,7 +876,7 @@ function renderEmpSummary() {
       '<tr><td class="font-semibold whitespace-nowrap">' + dateRange(l) + '</td>' +
       '<td class="font-bold whitespace-nowrap">' + esc(l.type) + certLink(l) + '</td>' +
       '<td class="text-slate-600 max-w-[220px] truncate" title="' + esc(l.reason) + '">' + esc(l.reason || '-') + '</td>' +
-      '<td class="c font-bold text-coral">' + fmtDays(l.days) + '</td>' +
+      '<td class="c font-bold text-blue-700">' + fmtDays(l.days) + '</td>' +
       '<td class="c">' + badge(l) + '</td></tr>').join('');
     hist.classList.remove('hidden');
   }
@@ -897,7 +901,7 @@ function renderMonthSummary() {
       '<td class="font-semibold whitespace-nowrap">' + dateRange(l) + '</td>' +
       '<td class="font-semibold whitespace-nowrap">' + esc(l.type) + '</td>' +
       '<td class="text-sm text-slate-600 max-w-[200px] truncate" title="' + esc(l.reason) + '">' + esc(l.reason || '-') + '</td>' +
-      '<td class="c font-bold text-coral text-base">' + fmtDays(l.days) + '</td>' +
+      '<td class="c font-bold text-blue-700 text-base">' + fmtDays(l.days) + '</td>' +
       '<td class="c">' + badge(l) + note + '</td><td class="c">' + act + '</td></tr>';
   }).join('');
 }
