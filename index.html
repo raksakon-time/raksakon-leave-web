@@ -201,6 +201,7 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
     <nav class="flex-1 overflow-y-auto px-3 py-6">
       <a onclick="switchTab('user')" id="btn-user" class="nav-item nav-active"><span data-i="home" data-c="w-6 h-6"></span>หน้าแดชบอร์ด</a>
       <a onclick="switchTab('hod')" id="btn-hod" class="nav-item hidden"><span data-i="check" data-c="w-6 h-6"></span>พิจารณาอนุมัติ</a>
+      <a onclick="switchTab('team')" id="btn-team" class="nav-item hidden"><span data-i="list" data-c="w-6 h-6"></span>ประวัติลาของแผนก</a>
       <a onclick="switchTab('hr')" id="btn-hr" class="nav-item hidden"><span data-i="users" data-c="w-6 h-6"></span>จัดการข้อมูล (HR)</a>
     </nav>
 
@@ -303,6 +304,45 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
             <table style="min-width:960px">
               <thead><tr><th>วันที่ยื่น</th><th>พนักงาน / แผนก</th><th>วันที่ขอลา</th><th>ประเภท</th><th>เหตุผล</th><th class="c">จำนวนวัน</th><th>ความเห็นเพิ่มเติม</th><th class="c">การตัดสินใจ</th></tr></thead>
               <tbody id="hod-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== View: Team (หัวหน้างาน) ===== -->
+      <div id="view-team" class="hidden space-y-5 max-w-[1400px] mx-auto">
+        <div class="card">
+          <div class="px-5 sm:px-6 py-4 border-b border-[var(--line)] flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <span class="icon-tile" style="background:var(--pc);color:var(--p)"><span data-i="pie" data-c="w-6 h-6"></span></span>
+              <div>
+                <h3 class="text-lg font-bold text-slate-800 leading-tight">สรุปจำนวนลา / โควต้าคงเหลือ</h3>
+                <p id="team-dept" class="text-xs text-slate-500"></p>
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+              <select id="team-year" onchange="renderTeam()" class="sm:!w-36"></select>
+              <select id="team-emp" onchange="renderTeam()" class="lg:!w-64"></select>
+              <button type="button" onclick="exportToExcel('team-table','โควต้าแผนก')" class="btn btn-tonal"><span data-i="download"></span>Export Excel</button>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table id="team-table" class="stick-2" style="min-width:900px">
+              <thead><tr><th>รหัส</th><th>ชื่อ - นามสกุล</th><th>ตำแหน่ง</th><th class="c">ป่วย (ใช้/เต็ม)</th><th class="c">กิจ (ใช้/เต็ม)</th><th class="c">พักร้อน (ใช้/เต็ม)</th><th class="c">คงเหลือรวม (วัน)</th></tr></thead>
+              <tbody id="team-summary-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="px-5 sm:px-6 py-4 border-b border-[var(--line)] flex items-center justify-between gap-3">
+            <h3 class="text-lg font-bold text-slate-800">ประวัติการลา <span id="team-count" class="text-sm font-semibold text-slate-400"></span></h3>
+            <button type="button" onclick="exportToExcel('team-history','ประวัติลาแผนก')" class="btn btn-tonal btn-sm"><span data-i="download"></span>Export</button>
+          </div>
+          <div class="table-scroll">
+            <table id="team-history" style="min-width:820px">
+              <thead><tr><th>พนักงาน</th><th>วันที่ลา</th><th>ประเภท</th><th>เหตุผล</th><th class="c">จำนวนวัน</th><th class="c">สถานะ</th></tr></thead>
+              <tbody id="team-history-body"></tbody>
             </table>
           </div>
         </div>
@@ -442,7 +482,7 @@ const QUOTA_DEFS = [
   ['personal', 'ลากิจ', 'briefcase', '#E9EEF9', '#4B63A6', '#89A0CF']
 ];
 const STATE = { approved: ['อนุมัติ', 'chip-ok'], rejected: ['ปฏิเสธ', 'chip-no'], pending: ['รอพิจารณา', 'chip-wait'] };
-const TITLES = { user: 'แดชบอร์ด', hod: 'รายการรอพิจารณาอนุมัติ', hr: 'จัดการข้อมูลส่วนกลาง (HR)' };
+const TITLES = { user: 'แดชบอร์ด', hod: 'รายการรอพิจารณาอนุมัติ', team: 'ประวัติและโควต้าของแผนก', hr: 'จัดการข้อมูลส่วนกลาง (HR)' };
 const THAI_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 
 const ICONS = {
@@ -571,6 +611,7 @@ function handleLogin() {
     const role = S.user.role, canApprove = ['Admin', 'HR', 'HOD'].indexOf(role) > -1;
     $('btn-hod').classList.toggle('hidden', !canApprove);
     $('btn-hr').classList.toggle('hidden', ['Admin', 'HR'].indexOf(role) < 0);
+    $('btn-team').classList.toggle('hidden', role !== 'HOD'); // HR/Admin ดูข้อมูลได้ที่หน้า HR อยู่แล้ว
     $('login-page').classList.add('hidden');
     $('main-app').classList.remove('hidden');
     renderDashboard();
@@ -592,7 +633,7 @@ function resetSession() {
   if (S.chart) { S.chart.destroy(); S.chart = null; }
   $('username').value = ''; $('password').value = ''; $('password').type = 'password';
   $('eye').innerHTML = ic('eye', 'w-6 h-6');
-  $('btn-hod').classList.add('hidden'); $('btn-hr').classList.add('hidden');
+  $('btn-hod').classList.add('hidden'); $('btn-hr').classList.add('hidden'); $('btn-team').classList.add('hidden');
   $('main-app').classList.add('hidden'); $('login-page').classList.remove('hidden');
 }
 
@@ -606,7 +647,7 @@ function setSidebar(open) {
 
 function switchTab(tab) {
   $('page-title').textContent = TITLES[tab];
-  ['user', 'hod', 'hr'].forEach(t => {
+  ['user', 'hod', 'team', 'hr'].forEach(t => {
     $('view-' + t).classList.toggle('hidden', t !== tab);
     $('btn-' + t).classList.toggle('nav-active', t === tab);
   });
@@ -614,7 +655,7 @@ function switchTab(tab) {
   if (tab === 'user') return;
   api('getAllLeavesForHR', [], res => {
     S.leaves = res.data; S.users = res.users || []; S.hrYears = res.years || []; S.curYear = res.year;
-    tab === 'hod' ? renderHOD() : setupHR();
+    tab === 'hod' ? renderHOD() : tab === 'team' ? setupTeam() : setupHR();
   });
 }
 
@@ -912,6 +953,60 @@ function markChecked(id) {
     if (l) l.hr_checked = 'ตรวจสอบแล้ว';
     renderMonthSummary(); toast('บันทึกเรียบร้อย');
   });
+}
+
+/* =========================================================
+ * หัวหน้างาน: ประวัติการลา + โควต้าคงเหลือของพนักงานในแผนกตัวเอง
+ * (เซิร์ฟเวอร์ส่งเฉพาะข้อมูลแผนกของหัวหน้าคนนั้นมาให้แล้ว)
+ * ========================================================= */
+function setupTeam() {
+  $('team-dept').textContent = 'แผนก ' + (S.user.department || '-');
+  const hadYear = $('team-year').value;
+  setOptions('team-year', S.hrYears.map(y => opt(y, yLabel(y))).join(''));
+  if (!hadYear) $('team-year').value = String(S.curYear);
+  setOptions('team-emp', opt('all', 'พนักงานทั้งหมดในแผนก') + S.users.filter(u => u.id).map(u => opt(u.id, empLabel(u))).join(''));
+  renderTeam();
+}
+
+function renderTeam() {
+  const yr = $('team-year').value || String(S.curYear), id = $('team-emp').value || 'all';
+  const inYear = l => (l.start_date || '').slice(0, 4) === yr;
+  const qV = u => u.quota_v_by_year && u.quota_v_by_year[yr] !== undefined ? u.quota_v_by_year[yr] : u.quota_v;
+
+  const used = {};
+  S.leaves.forEach(l => {
+    const k = QUOTA_KEY[l.type];
+    if (l.state !== 'approved' || !k || !inYear(l)) return;
+    const u = used[l.user_id] = used[l.user_id] || { sick: 0, personal: 0, vacation: 0 };
+    u[k] += l.days;
+  });
+
+  const targets = id === 'all' ? S.users.filter(u => u.id) : S.users.filter(u => u.id === id);
+  $('team-summary-body').innerHTML = !targets.length ? emptyRow(7, 'ไม่พบข้อมูลพนักงาน') : targets.map(u => {
+    const x = used[u.id] || { sick: 0, personal: 0, vacation: 0 };
+    const tot = { sick: +u.quota_s || 0, personal: +u.quota_l || 0, vacation: +qV(u) || 0 };
+    const cell = k => {
+      const left = tot[k] - x[k];
+      return '<td class="c"><span class="font-bold text-base text-slate-900">' + fmtDays(x[k]) + '</span><span class="text-sm font-bold text-slate-500"> / ' + fmtDays(tot[k]) + '</span>' +
+        '<div class="text-xs font-semibold ' + (left < 0 ? 'text-rose-600' : 'text-slate-400') + '">เหลือ ' + fmtDays(left) + '</div></td>';
+    };
+    const left = tot.sick + tot.personal + tot.vacation - x.sick - x.personal - x.vacation;
+    return '<tr><td class="font-semibold">' + esc(u.id) + '</td><td class="font-bold">' + esc(u.name || '-') + '</td><td class="text-slate-600">' + esc(pos(u)) + '</td>' +
+      cell('sick') + cell('personal') + cell('vacation') +
+      '<td class="c font-bold text-lg ' + (left < 0 ? 'text-rose-600' : 'text-blue-700') + '">' + fmtDays(left) + '</td></tr>';
+  }).join('');
+
+  const rows = S.leaves.filter(l => inYear(l) && (id === 'all' || l.user_id === id));
+  $('team-count').textContent = '(' + rows.length + ' รายการ)';
+  $('team-history-body').innerHTML = !rows.length ? emptyRow(6, 'ไม่มีประวัติการลาในปีที่เลือก') : rows.map(l => {
+    const note = l.hod_remark && l.hod_remark !== '-' ? '<div class="text-xs font-semibold text-slate-500 mt-1.5">💬 ' + esc(l.hod_remark) + '</div>' : '';
+    return '<tr><td class="font-bold whitespace-nowrap">' + esc(l.employee_name || '-') + '<br><span class="text-xs font-medium text-slate-500">รหัส ' + esc(l.user_id) + '</span></td>' +
+      '<td class="font-semibold whitespace-nowrap">' + dateRange(l) + '</td>' +
+      '<td><span class="font-semibold">' + esc(l.type) + '</span>' + certLink(l) + '</td>' +
+      '<td class="text-slate-600 min-w-[180px] max-w-[260px] break-words">' + esc(l.reason || '-') + '</td>' +
+      '<td class="c font-bold text-blue-700 text-base">' + fmtDays(l.days) + '</td>' +
+      '<td class="c">' + badge(l) + note + '</td></tr>';
+  }).join('');
 }
 
 function exportToExcel(tableId, name) {
