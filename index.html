@@ -74,6 +74,10 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
 .nav-item:hover{background:#F1F2F6;color:var(--ink)}
 .nav-item.hidden{display:none}
 .nav-active{background:var(--pc)!important;color:var(--on-pc)!important;font-weight:700}
+/* ตัวเลขแจ้งเตือนแบบ LINE */
+.nav-badge{margin-left:auto;min-width:22px;height:22px;padding:0 6px;border-radius:99px;background:#FF334B;color:#fff;font-size:.75rem;font-weight:700;line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.nav-badge.hidden,.menu-badge.hidden{display:none}
+.menu-badge{position:absolute;top:0;right:0;min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:#FF334B;color:#fff;font-size:.68rem;font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
 
 /* ---------- Status chips ---------- */
 .chip{display:inline-block;padding:5px 14px;border-radius:99px;font-size:.75rem;font-weight:700;white-space:nowrap}
@@ -200,7 +204,7 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
 
     <nav class="flex-1 overflow-y-auto px-3 py-6">
       <a onclick="switchTab('user')" id="btn-user" class="nav-item nav-active"><span data-i="home" data-c="w-6 h-6"></span>หน้าแดชบอร์ด</a>
-      <a onclick="switchTab('hod')" id="btn-hod" class="nav-item hidden"><span data-i="check" data-c="w-6 h-6"></span>พิจารณาอนุมัติ</a>
+      <a onclick="switchTab('hod')" id="btn-hod" class="nav-item hidden"><span data-i="check" data-c="w-6 h-6"></span>พิจารณาอนุมัติ<span id="badge-hod" class="nav-badge hidden">0</span></a>
       <a onclick="switchTab('team')" id="btn-team" class="nav-item hidden"><span data-i="list" data-c="w-6 h-6"></span>ประวัติลาของแผนก</a>
       <a onclick="switchTab('hr')" id="btn-hr" class="nav-item hidden"><span data-i="users" data-c="w-6 h-6"></span>จัดการข้อมูล (HR)</a>
     </nav>
@@ -214,7 +218,7 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
   <div class="flex-1 flex flex-col min-w-0 app-shell">
     <header class="h-[72px] flex items-center justify-between px-5 sm:px-8 flex-shrink-0">
       <div class="flex items-center min-w-0">
-        <button type="button" onclick="setSidebar(true)" class="btn-icon lg-hide mr-2" aria-label="เปิดเมนู"><span data-i="menu" data-c="w-6 h-6"></span></button>
+        <button type="button" onclick="setSidebar(true)" class="btn-icon lg-hide mr-2 relative" aria-label="เปิดเมนู"><span data-i="menu" data-c="w-6 h-6"></span><span id="badge-menu" class="menu-badge hidden">0</span></button>
         <h2 id="page-title" class="text-lg font-bold text-slate-800 truncate">แดชบอร์ด</h2>
       </div>
       <div class="flex items-center gap-3 bg-white/95 pl-5 pr-2 py-2 rounded-full border border-[var(--line)] shadow-sm flex-shrink-0">
@@ -526,7 +530,8 @@ const pos = x => x.position || x.department || '-';
 const empLabel = u => (u.id ? u.id + ' · ' : '') + (u.name || '-') + ' (' + pos(u) + ')';
 const opt = (v, t) => '<option value="' + esc(v) + '">' + esc(t) + '</option>';
 
-const S = { token: null, user: null, history: [], years: [], leaves: [], users: [], hrYears: [], curYear: 0, chart: null };
+const S = { token: null, user: null, history: [], years: [], leaves: [], users: [], hrYears: [], curYear: 0, chart: null, pending: 0, canApprove: false, poll: null };
+const BASE_TITLE = document.title;
 const yLabel = y => 'พ.ศ. ' + (+y + 543);
 
 const swal = o => window.Swal ? Swal.fire(o) : alert([o.title, o.text].filter(Boolean).join('\n'));
@@ -578,6 +583,28 @@ function api(fn, args, onOk) {
   });
 }
 
+/** ตัวเลขแจ้งเตือนรายการรออนุมัติ (แบบ LINE) */
+const toastInfo = t => window.Swal && Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: t, showConfirmButton: false, timer: 3500 });
+
+function setBadge(n) {
+  n = +n || 0;
+  S.pending = n;
+  const txt = n > 99 ? '99+' : String(n);
+  ['badge-hod', 'badge-menu'].forEach(id => { const el = $(id); el.textContent = txt; el.classList.toggle('hidden', n < 1); });
+  document.title = (n ? '(' + n + ') ' : '') + BASE_TITLE;
+}
+
+/** ถามจำนวนรายการรออนุมัติแบบเงียบ ๆ (ไม่ขึ้นหน้าจอโหลด) */
+function refreshPending(announce) {
+  if (!S.token || !S.canApprove || document.hidden) return;
+  rpc('getPendingCount', [S.token]).then(res => {
+    if (!S.token || !res || !res.success) return;
+    const prev = S.pending;
+    setBadge(res.count);
+    if (res.count > 0 && (announce || res.count > prev)) toastInfo('มีรายการรออนุมัติ ' + res.count + ' รายการ');
+  }).catch(() => {});
+}
+
 /** แจ้งผลหลังบันทึก (เตือนถ้าซิงค์ตารางเวรไม่สำเร็จ) */
 const done = (res, msg) => res.syncOk === false
   ? warn('บันทึกแล้ว แต่ซิงค์ตารางเวรไม่สำเร็จ', 'กรุณาตรวจสอบแผ่น Schedule ของระบบลงเวลา')
@@ -590,6 +617,7 @@ function init() {
   document.querySelectorAll('[data-i]').forEach(el => { el.innerHTML = ic(el.dataset.i, el.dataset.c); });
   $('eye').innerHTML = ic('eye', 'w-6 h-6');
   ['u-type', 'a-type'].forEach(id => { $(id).innerHTML = opt('', 'โปรดเลือกประเภทการลา') + LEAVE_TYPES.map(t => opt(t, t)).join(''); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshPending(false); });
   $('username').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('password').focus(); } });
   $('password').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); handleLogin(); } });
 }
@@ -615,6 +643,10 @@ function handleLogin() {
     $('login-page').classList.add('hidden');
     $('main-app').classList.remove('hidden');
     renderDashboard();
+    S.canApprove = canApprove;
+    setBadge(0);
+    clearInterval(S.poll);
+    if (canApprove) { refreshPending(true); S.poll = setInterval(() => refreshPending(false), 60000); }
     const wantView = new URLSearchParams(location.search).get('v') || document.body.dataset.view;
     switchTab(wantView === 'hod' && canApprove ? 'hod' : 'user');
   });
@@ -634,6 +666,7 @@ function resetSession() {
   $('username').value = ''; $('password').value = ''; $('password').type = 'password';
   $('eye').innerHTML = ic('eye', 'w-6 h-6');
   $('btn-hod').classList.add('hidden'); $('btn-hr').classList.add('hidden'); $('btn-team').classList.add('hidden');
+  clearInterval(S.poll); S.poll = null; S.canApprove = false; setBadge(0);
   $('main-app').classList.add('hidden'); $('login-page').classList.remove('hidden');
 }
 
@@ -824,6 +857,7 @@ function submitLeaveByAdmin() {
  * ========================================================= */
 function renderHOD() {
   const rows = S.leaves.filter(l => l.state === 'pending');
+  setBadge(rows.length);
   $('hod-body').innerHTML = !rows.length ? emptyRow(8, '✨ ไม่มีรายการค้างพิจารณา') : rows.map(l => {
     const id = esc(l.id);
     return '<tr>' +
