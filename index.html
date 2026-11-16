@@ -84,6 +84,7 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
 .chip-ok{background:#d1fae5;color:#065f46}
 .chip-wait{background:#fef3c7;color:#78350f}
 .chip-no{background:#ffe4e6;color:#9f1239}
+.chip-off{background:#e2e8f0;color:#475569}
 
 /* ---------- Scrollable tables: หัวตารางค้างอยู่เมื่อเลื่อน ---------- */
 .table-scroll{overflow:auto;max-height:min(62vh,560px);scrollbar-width:thin;scrollbar-color:#B6C3E6 transparent;-webkit-overflow-scrolling:touch}
@@ -266,8 +267,12 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-5">
-          <div class="lg:col-span-2 card p-4 sm:p-6">
-            <h3 class="text-lg font-bold text-slate-800 mb-3 sm:mb-6">ยื่นแบบคำขอการลา</h3>
+          <div id="u-form-card" class="lg:col-span-2 card p-4 sm:p-6">
+            <h3 id="u-form-title" class="text-lg font-bold text-slate-800 mb-3 sm:mb-6">ยื่นแบบคำขอการลา</h3>
+            <div id="u-edit-bar" class="hidden mb-4 p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-sm font-semibold flex flex-wrap items-center justify-between gap-2">
+              <span>กำลังแก้ไขใบลาที่รอพิจารณา ไม่แนบไฟล์ใหม่ = ใช้ไฟล์เดิม</span>
+              <button type="button" onclick="cancelEdit()" class="btn btn-outline btn-sm">ยกเลิกการแก้ไข</button>
+            </div>
             <div class="mb-4 sm:mb-6 flex flex-wrap gap-x-5 gap-y-2">
               <label class="flex items-center gap-3 cursor-pointer"><input type="radio" name="u-format" id="u-daily" checked onchange="toggleFormat('u')"><span class="font-bold text-slate-700">ลาเต็มวัน / หลายวัน</span></label>
               <label class="flex items-center gap-3 cursor-pointer"><input type="radio" name="u-format" id="u-hourly" onchange="toggleFormat('u')"><span class="font-bold text-slate-700">ลารายชั่วโมง</span></label>
@@ -285,7 +290,7 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
                 <input type="file" id="u-cert" accept="image/*,.pdf">
               </div>
               <div class="md:col-span-2 flex justify-end">
-                <button type="button" onclick="submitLeave()" class="btn btn-fill btn-lg w-full md:w-auto"><span data-i="send"></span>ส่งคำขอการลา</button>
+                <button type="button" onclick="submitLeave()" class="btn btn-fill btn-lg w-full md:w-auto"><span data-i="send"></span><span id="u-submit-label">ส่งคำขอการลา</span></button>
               </div>
             </div>
           </div>
@@ -498,7 +503,7 @@ const QUOTA_DEFS = [
   ['vacation', 'ลาพักร้อน', 'sun', '#E8ECF7', '#2A3C76', '#2A3C76'],
   ['personal', 'ลากิจ', 'briefcase', '#E9EEF9', '#4B63A6', '#89A0CF']
 ];
-const STATE = { approved: ['อนุมัติ', 'chip-ok'], rejected: ['ปฏิเสธ', 'chip-no'], pending: ['รอพิจารณา', 'chip-wait'] };
+const STATE = { approved: ['อนุมัติ', 'chip-ok'], rejected: ['ปฏิเสธ', 'chip-no'], cancelled: ['ยกเลิกแล้ว', 'chip-off'], pending: ['รอพิจารณา', 'chip-wait'] };
 const TITLES = { user: 'แดชบอร์ด', hod: 'รายการรอพิจารณาอนุมัติ', team: 'ประวัติและโควต้าของแผนก', hr: 'จัดการข้อมูลส่วนกลาง (HR)' };
 const THAI_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 
@@ -526,7 +531,9 @@ const ICONS = {
   briefcase: 'M4 7h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V9a2 2 0 012-2zM16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16',
   arrow: 'M5 12h14M12 5l7 7-7 7',
   badge: 'M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2zM12 11a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM7.5 17c.6-2 2.2-3 4.5-3s3.9 1 4.5 3',
-  lock: 'M5 11h14a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7a2 2 0 012-2zM7 11V7a5 5 0 0110 0v4'
+  lock: 'M5 11h14a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7a2 2 0 012-2zM7 11V7a5 5 0 0110 0v4',
+  pencil: 'M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z',
+  ban: 'M12 22a10 10 0 100-20 10 10 0 000 20zM4.93 4.93l14.14 14.14'
 };
 const ic = (n, c) => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="' + (c || 'w-5 h-5') + '"><path d="' + ICONS[n] + '"/></svg>';
 
@@ -545,7 +552,7 @@ const pos = x => x.position || x.department || '-';
 const empLabel = u => (u.id ? u.id + ' · ' : '') + (u.name || '-') + ' (' + pos(u) + ')';
 const opt = (v, t) => '<option value="' + esc(v) + '">' + esc(t) + '</option>';
 
-const S = { token: null, user: null, history: [], years: [], leaves: [], users: [], hrYears: [], curYear: 0, chart: null, pending: 0, canApprove: false, poll: null };
+const S = { token: null, user: null, history: [], years: [], leaves: [], users: [], hrYears: [], curYear: 0, chart: null, pending: 0, canApprove: false, poll: null, editId: null };
 const BASE_TITLE = document.title;
 const yLabel = y => 'พ.ศ. ' + (+y + 543);
 
@@ -773,8 +780,10 @@ function renderHistory() {
       '<td><span class="font-semibold">' + esc(l.type) + '</span>' + certLink(l) + '</td>' +
       '<td class="text-slate-600 max-w-[220px] truncate" title="' + esc(l.reason) + '">' + esc(l.reason || '-') + '</td>' +
       '<td class="c font-bold text-blue-700 text-base">' + fmtDays(l.days) + '</td>' +
-      '<td class="c">' + badge(l) + note + '</td>' +
-      '<td class="c"><button type="button" class="btn-icon" title="พิมพ์ใบลา" onclick="printPDF(\'' + esc(l.id) + '\')">' + ic('printer') + '</button></td></tr>';
+      '<td class="c">' + badge(l) + (l.edited_at ? '<div class="text-[11px] font-semibold text-slate-400 mt-1">แก้ไขแล้ว</div>' : '') + note + '</td>' +
+      '<td class="c whitespace-nowrap">' + (l.state === 'pending' ? '<button type="button" class="btn-icon" title="แก้ไขใบลา" onclick="startEdit(\'' + esc(l.id) + '\')">' + ic('pencil') + '</button>' +
+          '<button type="button" class="btn-icon" style="color:#D6393F" title="ยกเลิกใบลา" onclick="cancelLeave(\'' + esc(l.id) + '\')">' + ic('ban') + '</button>' : '') +
+        '<button type="button" class="btn-icon" title="พิมพ์ใบลา" onclick="printPDF(\'' + esc(l.id) + '\')">' + ic('printer') + '</button></td></tr>';
   }).join('');
 }
 
@@ -798,7 +807,51 @@ function resetForm(p) {
   $(p + '-type').selectedIndex = 0;
   $(p + '-daily').checked = true;
   toggleFormat(p);
-  if (p === 'u') { $('u-cert').value = ''; toggleCert(); }
+  if (p === 'u') { $('u-cert').value = ''; toggleCert(); setEditMode(null); }
+}
+
+/* ---------- แก้ไขใบลาที่รอพิจารณา (ใช้ฟอร์มยื่นลาเดิม) ---------- */
+function setEditMode(id) {
+  S.editId = id;
+  $('u-form-title').textContent = id ? 'แก้ไขคำขอการลา' : 'ยื่นแบบคำขอการลา';
+  $('u-submit-label').textContent = id ? 'บันทึกการแก้ไข' : 'ส่งคำขอการลา';
+  $('u-edit-bar').classList.toggle('hidden', !id);
+}
+
+function startEdit(id) {
+  const l = S.history.find(x => x.id === id);
+  if (!l || l.state !== 'pending') return warn('แก้ไขไม่ได้', 'ใบลานี้ถูกพิจารณาแล้ว');
+  resetForm('u');
+  const m = /\(ลา (\d{2}:\d{2})-(\d{2}:\d{2}) น\./.exec(l.reason || ''); // ใบเก่าที่ไม่มีคอลัมน์เวลา
+  const st = l.start_time || (l.days < 1 && m ? m[1] : ''), et = l.end_time || (l.days < 1 && m ? m[2] : '');
+  const hourly = !!(st && et);
+  $('u-type').value = l.type;
+  $('u-start').value = l.start_date;
+  $(hourly ? 'u-hourly' : 'u-daily').checked = true;
+  toggleFormat('u');
+  if (hourly) { $('u-from').value = st; $('u-to').value = et; }
+  else $('u-end').value = l.end_date || l.start_date;
+  // ตัดข้อความเวลาที่ระบบเติมท้ายเหตุผลตอนยื่น เพื่อไม่ให้ซ้ำเมื่อบันทึกใหม่
+  $('u-reason').value = String(l.reason || '').replace(/\s*\(ลา \d{2}:\d{2}-\d{2}:\d{2} น\. [\d.]+ ชม\.\)\s*$/, '');
+  toggleCert();
+  setEditMode(id);
+  $('u-form-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function cancelEdit() { resetForm('u'); }
+
+function cancelLeave(id) {
+  const l = S.history.find(x => x.id === id);
+  if (!l || l.state !== 'pending') return warn('ยกเลิกไม่ได้', 'ใบลานี้ถูกพิจารณาแล้ว กรุณาติดต่อหัวหน้า/HR');
+  const run = () => api('cancelLeave', [id, S.user.year], res => {
+    if (S.editId === id) resetForm('u');
+    S.user = res.user; S.history = res.history; S.years = res.years || S.years;
+    renderDashboard(); toast('ยกเลิกใบลาเรียบร้อย');
+  });
+  if (!window.Swal) return confirm('ยืนยันยกเลิกใบลานี้?') && run();
+  Swal.fire({ title: 'ยกเลิกใบลานี้?', html: esc(l.type) + ' · ' + dateRange(l) + '<br><span style="font-size:.9em;color:#64748b">ยกเลิกแล้วกู้คืนไม่ได้ ต้องยื่นใหม่</span>', icon: 'warning',
+    showCancelButton: true, confirmButtonText: 'ยกเลิกใบลา', cancelButtonText: 'ไม่ใช่', confirmButtonColor: '#D6393F' })
+    .then(r => r.isConfirmed && run());
 }
 
 /** อ่านฟอร์ม + ตรวจความถูกต้อง (throw Error เมื่อไม่ผ่าน) */
@@ -844,14 +897,16 @@ async function submitLeave() {
   try {
     const f = readLeaveForm('u', true);
     const file = f.type === 'ลาป่วย' ? $('u-cert').files[0] : null;
-    if (f.type === 'ลาป่วย' && f.days >= 3 && !file) return warn('แนบเอกสาร', 'ลาป่วย 3 วันขึ้นไป กรุณาแนบใบรับรองแพทย์');
+    const oldCert = S.editId && (S.history.find(x => x.id === S.editId) || {}).medical_cert;
+    if (f.type === 'ลาป่วย' && f.days >= 3 && !file && !oldCert) return warn('แนบเอกสาร', 'ลาป่วย 3 วันขึ้นไป กรุณาแนบใบรับรองแพทย์');
     if (file) {
       if (file.size > 5 * 1024 * 1024) return warn('ไฟล์ใหญ่เกินไป', 'ขนาดไฟล์ต้องไม่เกิน 5MB');
       Object.assign(f, await readFile(file));
     }
-    api('submitLeave', [f, S.user.year], res => {
+    const editing = S.editId;
+    api(editing ? 'editLeave' : 'submitLeave', editing ? [editing, f, S.user.year] : [f, S.user.year], res => {
       S.user = res.user; S.history = res.history; S.years = res.years || S.years;
-      resetForm('u'); renderDashboard(); toast('ยื่นคำขอเรียบร้อย');
+      resetForm('u'); renderDashboard(); toast(editing ? 'บันทึกการแก้ไขเรียบร้อย' : 'ยื่นคำขอเรียบร้อย');
     });
   } catch (e) { warn('ข้อมูลไม่ถูกต้อง', e.message); }
 }
@@ -876,7 +931,7 @@ function renderHOD() {
   $('hod-body').innerHTML = !rows.length ? emptyRow(8, '✨ ไม่มีรายการค้างพิจารณา') : rows.map(l => {
     const id = esc(l.id);
     return '<tr>' +
-      '<td class="text-sm font-bold text-slate-500 whitespace-nowrap">' + esc(l.created_at || '-') + '</td>' +
+      '<td class="text-sm font-bold text-slate-500 whitespace-nowrap">' + esc(l.created_at || '-') + (l.edited_at ? '<div class="text-xs font-semibold text-amber-700 mt-1">แก้ไข ' + esc(l.edited_at) + '</div>' : '') + '</td>' +
       '<td class="font-bold">' + esc(l.employee_name || '-') + '<br><span class="text-xs font-medium text-slate-500">รหัส ' + esc(l.user_id) + ' · ' + esc(pos(l)) + '</span></td>' +
       '<td class="font-semibold whitespace-nowrap">' + dateRange(l) + '</td>' +
       '<td><span class="font-semibold">' + esc(l.type) + '</span>' + certLink(l) + '</td>' +
