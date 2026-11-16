@@ -373,11 +373,15 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
       <!-- ===== View: HR ===== -->
       <div id="view-hr" class="hidden space-y-5 max-w-[1400px] mx-auto">
 
-        <div class="card p-5 sm:p-6">
+        <div id="a-form-card" class="card p-5 sm:p-6">
           <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-3">
             <span class="icon-tile" style="background:var(--pc);color:var(--p)"><span data-i="plus" data-c="w-6 h-6"></span></span>
-            บันทึกข้อมูลการลา (ฉุกเฉิน / ย้อนหลัง)
+            <span id="a-form-title">บันทึกข้อมูลการลา (ฉุกเฉิน / ย้อนหลัง)</span>
           </h3>
+          <div id="a-edit-bar" class="hidden mb-5 p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-sm font-semibold flex flex-wrap items-center justify-between gap-2">
+            <span id="a-edit-note"></span>
+            <button type="button" onclick="cancelHrEdit()" class="btn btn-outline btn-sm">ยกเลิกการแก้ไข</button>
+          </div>
           <div class="mb-6 flex gap-5">
             <label class="flex items-center gap-3 cursor-pointer"><input type="radio" name="a-format" id="a-daily" checked onchange="toggleFormat('a')"><span class="text-sm font-bold text-slate-700">เต็มวัน</span></label>
             <label class="flex items-center gap-3 cursor-pointer"><input type="radio" name="a-format" id="a-hourly" onchange="toggleFormat('a')"><span class="text-sm font-bold text-slate-700">รายชั่วโมง</span></label>
@@ -391,7 +395,7 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
               <div id="a-hours-wrap" class="hidden"><label class="lbl">ช่วงเวลาที่ลา</label><div class="flex gap-2 items-center"><input type="time" id="a-from"><span class="font-bold text-slate-400">-</span><input type="time" id="a-to"></div></div>
             </div>
             <div class="sm:col-span-2 lg:col-span-4"><label class="lbl" for="a-reason">เหตุผล</label><input type="text" id="a-reason" placeholder="ระบุเหตุผล"></div>
-            <div class="sm:col-span-2"><button type="button" onclick="submitLeaveByAdmin()" class="btn btn-fill btn-lg w-full">บันทึกเข้าสู่ระบบ</button></div>
+            <div class="sm:col-span-2"><button type="button" onclick="submitLeaveByAdmin()" class="btn btn-fill btn-lg w-full"><span id="a-submit-label">บันทึกเข้าสู่ระบบ</span></button></div>
           </div>
         </div>
 
@@ -419,8 +423,8 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
             <div id="emp-history" class="hidden border-t border-[var(--line)]">
               <div class="px-8 py-4 bg-blue-50/60 font-bold text-blue-900 flex items-center gap-2"><span data-i="list"></span>รายละเอียดประวัติการลาของพนักงาน</div>
               <div class="table-scroll" style="max-height:min(50vh,440px)">
-                <table style="min-width:640px">
-                  <thead><tr><th>วันที่ลา</th><th>ประเภท</th><th>เหตุผล</th><th class="c">จำนวนวัน</th><th class="c">สถานะ</th></tr></thead>
+                <table style="min-width:720px">
+                  <thead><tr><th>วันที่ลา</th><th>ประเภท</th><th>เหตุผล</th><th class="c">จำนวนวัน</th><th class="c">สถานะ</th><th class="c">จัดการ</th></tr></thead>
                   <tbody id="emp-history-body"></tbody>
                 </table>
               </div>
@@ -552,7 +556,7 @@ const pos = x => x.position || x.department || '-';
 const empLabel = u => (u.id ? u.id + ' · ' : '') + (u.name || '-') + ' (' + pos(u) + ')';
 const opt = (v, t) => '<option value="' + esc(v) + '">' + esc(t) + '</option>';
 
-const S = { token: null, user: null, history: [], years: [], leaves: [], users: [], hrYears: [], curYear: 0, chart: null, pending: 0, canApprove: false, poll: null, editId: null };
+const S = { token: null, user: null, history: [], years: [], leaves: [], users: [], hrYears: [], curYear: 0, chart: null, pending: 0, canApprove: false, poll: null, editId: null, hrEditId: null };
 const BASE_TITLE = document.title;
 const yLabel = y => 'พ.ศ. ' + (+y + 543);
 
@@ -911,11 +915,78 @@ async function submitLeave() {
   } catch (e) { warn('ข้อมูลไม่ถูกต้อง', e.message); }
 }
 
+/* ---------- HR/Admin แก้ไข / ยกเลิกใบลา (รวมใบที่อนุมัติแล้ว ระบบคืนเวรในตารางให้) ---------- */
+function setHrEdit(l) {
+  S.hrEditId = l ? l.id : null;
+  $('admin-user').disabled = !!l;
+  $('a-form-title').textContent = l ? 'แก้ไข / เปลี่ยนวันลา' : 'บันทึกข้อมูลการลา (ฉุกเฉิน / ย้อนหลัง)';
+  $('a-submit-label').textContent = l ? 'บันทึกการแก้ไข' : 'บันทึกเข้าสู่ระบบ';
+  $('a-edit-note').textContent = !l ? '' : l.state === 'approved'
+    ? 'ใบนี้อนุมัติแล้ว: บันทึกแล้วระบบจะคืนเวรวันเดิม และลงลาวันใหม่ในตารางเวรทันที'
+    : 'ใบนี้ยังรอพิจารณา: แก้ข้อมูลอย่างเดียว ยังรอหัวหน้าพิจารณาตามเดิม';
+  $('a-edit-bar').classList.toggle('hidden', !l);
+}
+
+function startHrEdit(id) {
+  const l = S.leaves.find(x => x.id === id);
+  if (!l) return;
+  resetForm('a');
+  const m = /\(ลา (\d{2}:\d{2})-(\d{2}:\d{2}) น\./.exec(l.reason || '');
+  const st = l.start_time || (l.days < 1 && m ? m[1] : ''), et = l.end_time || (l.days < 1 && m ? m[2] : '');
+  const hourly = !!(st && et);
+  $('admin-user').value = l.user_id;
+  $('a-type').value = l.type;
+  $('a-start').value = l.start_date;
+  $(hourly ? 'a-hourly' : 'a-daily').checked = true;
+  toggleFormat('a');
+  if (hourly) { $('a-from').value = st; $('a-to').value = et; } else $('a-end').value = l.end_date || l.start_date;
+  $('a-reason').value = String(l.reason || '').replace(/\s*\(ลา \d{2}:\d{2}-\d{2}:\d{2} น\. [\d.]+ ชม\.\)\s*$/, '');
+  setHrEdit(l);
+  $('a-form-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function cancelHrEdit() { resetForm('a'); setHrEdit(null); }
+
+/** แจ้งผลหลังแก้/ยกเลิก: รายการวันที่ที่ระบบไม่ได้คืนเวร หรือมีการลงเวลาแล้ว */
+function hrResult(res) {
+  const sk = res.skipped || [], ck = res.clocked || [];
+  if (res.syncOk !== false && !sk.length && !ck.length) return toast(res.message || 'บันทึกเรียบร้อย');
+  const fmt = d => esc(fmtDate(String(d).slice(0, 10))) + esc(String(d).slice(10));
+  let html = '';
+  if (res.syncOk === false) html += '<p>ปรับตารางเวรไม่สำเร็จ กรุณาตรวจสอบแผ่น Schedule ของระบบลงเวลา</p>';
+  if (sk.length) html += '<p style="margin-top:8px"><b>วันที่ระบบไม่ได้คืนเวร (ให้หัวหน้าแก้เอง):</b><br>' + sk.map(fmt).join('<br>') + '</p>';
+  if (ck.length) html += '<p style="margin-top:8px"><b>วันที่พนักงานลงเวลาไว้แล้ว (ตรวจข้อมูลลงเวลา):</b><br>' + ck.map(fmt).join('<br>') + '</p>';
+  swal({ icon: 'warning', title: (res.message || 'บันทึกแล้ว') + ' แต่มีจุดต้องตรวจ', html: html, confirmButtonText: 'ตกลง', confirmButtonColor: '#2A3C76' });
+}
+
+function hrCancel(id) {
+  const l = S.leaves.find(x => x.id === id);
+  if (!l) return;
+  const run = remark => api('hrCancelLeave', [id, remark], res => { if (S.hrEditId === id) cancelHrEdit(); hrResult(res); switchTab('hr'); });
+  if (!window.Swal) { const r = prompt('เหตุผลการยกเลิก'); return r && r.trim() && run(r.trim()); }
+  Swal.fire({
+    title: 'ยกเลิกใบลานี้?', icon: 'warning',
+    html: esc(l.employee_name || l.user_id) + '<br>' + esc(l.type) + ' · ' + dateRange(l) +
+      (l.state === 'approved' ? '<br><span style="font-size:.9em;color:#64748b">ใบนี้อนุมัติแล้ว ระบบจะคืนเวรในตารางเวรให้</span>' : ''),
+    input: 'text', inputPlaceholder: 'เหตุผลการยกเลิก (จำเป็น)',
+    inputValidator: v => !String(v || '').trim() && 'กรุณาระบุเหตุผล',
+    showCancelButton: true, confirmButtonText: 'ยกเลิกใบลา', cancelButtonText: 'ไม่ใช่', confirmButtonColor: '#D6393F'
+  }).then(r => r.isConfirmed && run(String(r.value).trim()));
+}
+
 function submitLeaveByAdmin() {
   try {
     const uid = $('admin-user').value;
     if (!uid) return warn('ข้อมูลไม่ครบ', 'กรุณาเลือกพนักงาน');
     const f = readLeaveForm('a', false);
+    if (S.hrEditId) {
+      const id = S.hrEditId;
+      const run = remark => api('hrEditLeave', [id, f, remark], res => { cancelHrEdit(); hrResult(res); switchTab('hr'); });
+      if (!window.Swal) return run('');
+      return Swal.fire({ title: 'บันทึกการแก้ไข?', icon: 'question', input: 'text', inputPlaceholder: 'หมายเหตุ เช่น พนักงานขอเปลี่ยนวัน (ไม่บังคับ)',
+        showCancelButton: true, confirmButtonText: 'บันทึก', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#2A3C76' })
+        .then(r => r.isConfirmed && run(String(r.value || '').trim()));
+    }
     api('addLeaveByAdmin', [Object.assign({ user_id: uid }, f)], res => {
       resetForm('a'); done(res, res.message); switchTab('hr');
     });
@@ -1017,12 +1088,16 @@ function renderEmpSummary() {
 
   if (id !== 'all') {
     const list = S.leaves.filter(l => l.user_id === id && inYear(l));
-    $('emp-history-body').innerHTML = !list.length ? emptyRow(5, 'ไม่มีประวัติการลาในปีที่เลือก') : list.map(l =>
-      '<tr><td class="font-semibold whitespace-nowrap">' + dateRange(l) + '</td>' +
+    $('emp-history-body').innerHTML = !list.length ? emptyRow(6, 'ไม่มีประวัติการลาในปีที่เลือก') : list.map(l => {
+      const can = l.state === 'approved' || l.state === 'pending', id = esc(l.id);
+      return '<tr><td class="font-semibold whitespace-nowrap">' + dateRange(l) + '</td>' +
       '<td class="font-bold whitespace-nowrap">' + esc(l.type) + certLink(l) + '</td>' +
       '<td class="text-slate-600 max-w-[220px] truncate" title="' + esc(l.reason) + '">' + esc(l.reason || '-') + '</td>' +
       '<td class="c font-bold text-blue-700">' + fmtDays(l.days) + '</td>' +
-      '<td class="c">' + badge(l) + '</td></tr>').join('');
+      '<td class="c">' + badge(l) + (l.edited_at ? '<div class="text-[11px] font-semibold text-slate-400 mt-1">แก้ไข ' + esc(l.edited_at) + '</div>' : '') + '</td>' +
+      '<td class="c whitespace-nowrap">' + (can ? '<button type="button" class="btn-icon" title="แก้ไข / เปลี่ยนวัน" onclick="startHrEdit(\'' + id + '\')">' + ic('pencil') + '</button>' +
+        '<button type="button" class="btn-icon" style="color:#D6393F" title="ยกเลิกใบลา" onclick="hrCancel(\'' + id + '\')">' + ic('ban') + '</button>' : '<span class="text-slate-300">-</span>') + '</td></tr>';
+    }).join('');
     hist.classList.remove('hidden');
   }
 }
