@@ -8,7 +8,7 @@
 <title>ระบบการลา | Leave Flow Pro</title>
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <script>tailwind.config={theme:{extend:{colors:{blue:{50:"#F3F5FB",100:"#E8ECF7",200:"#D3DAEE",300:"#B6C3E6",400:"#89A0CF",500:"#5B73B3",600:"#2A3C76",700:"#243468",800:"#1F2C58",900:"#18234A"}}}}}</script>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
@@ -29,6 +29,12 @@
   --e2:0 6px 16px rgba(42,60,118,.22);
 }
 html{font-size:15px;background-color:#F1F2F6;background-image:var(--grad-page);background-attachment:fixed;min-height:100%}
+/* หัวข้อ เมนู ปุ่มหลัก = Prompt / เนื้อหา = Sarabun (ชุดเดียวกับระบบลงเวลา) */
+:is(h1,h2,h3,h4),.font-head,.nav-item,.btn-fill,#login-page .lg-btn{font-family:'Prompt','Sarabun',sans-serif;letter-spacing:.1px}
+:is(h1,h2,h3,h4,.font-head):is(.font-bold,.font-extrabold){font-weight:600}
+.nav-item{font-weight:500}
+#login-page .lg-btn{font-weight:600}
+.swal2-title,.swal2-confirm,.swal2-cancel{font-family:'Prompt','Sarabun',sans-serif!important}
 body{font-family:'Sarabun',sans-serif;color:var(--ink);font-size:1rem;-webkit-font-smoothing:antialiased;min-height:100vh}
 .app-shell{height:100vh;height:100dvh}
 
@@ -73,7 +79,7 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
 .nav-item{display:flex;align-items:center;gap:12px;padding:11px 16px;margin-bottom:4px;border-radius:99px;color:var(--ink-2);font-weight:600;font-size:.95rem;cursor:pointer;transition:background .2s}
 .nav-item:hover{background:#F1F2F6;color:var(--ink)}
 .nav-item.hidden{display:none}
-.nav-active{background:var(--pc)!important;color:var(--on-pc)!important;font-weight:700}
+.nav-active{background:var(--pc)!important;color:var(--on-pc)!important;font-weight:600}
 /* ตัวเลขแจ้งเตือนแบบ LINE */
 .nav-badge{margin-left:auto;min-width:22px;height:22px;padding:0 6px;border-radius:99px;background:#FF334B;color:#fff;font-size:.75rem;font-weight:700;line-height:1;display:inline-flex;align-items:center;justify-content:center}
 .nav-badge.hidden,.menu-badge.hidden{display:none}
@@ -242,7 +248,7 @@ input[type=file]::file-selector-button{margin-right:14px;padding:8px 18px;border
   <aside id="sidebar" class="bg-white/95 border-r border-[var(--line)] w-[240px] flex-shrink-0 flex flex-col absolute inset-y-0 left-0 -translate-x-full lg:relative lg:translate-x-0 transition-transform duration-300 z-50">
     <div class="h-[72px] flex items-center px-5 border-b border-[var(--line)]">
       <img src="https://i.postimg.cc/pXHW7T4D/Squre-profile-pink-bg.jpg" alt="Logo" class="w-10 h-10 rounded-xl object-cover border border-slate-100 mr-4 bg-white">
-      <div class="font-extrabold text-slate-800 text-xl leading-tight">Leave<br>Flow</div>
+      <div class="font-head font-extrabold text-slate-800 text-xl leading-tight">Leave<br>Flow</div>
       <button type="button" onclick="setSidebar(false)" class="btn-icon lg-hide ml-auto" aria-label="ปิดเมนู"><span data-i="x" data-c="w-6 h-6"></span></button>
     </div>
 
