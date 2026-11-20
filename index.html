@@ -54,6 +54,9 @@ input[type=text],input[type=password],input[type=date],input[type=time],input[ty
   background:#fff;color:var(--ink);font:inherit;font-size:.95rem;transition:border-color .2s,box-shadow .2s;box-sizing:border-box}
 input:focus,select:focus{outline:none;border-color:var(--p);box-shadow:0 0 0 1px var(--p)}
 .lbl{display:block;margin-bottom:6px;font-size:.85rem;font-weight:700;color:#1F2A55}
+.time-sub{display:block;margin-bottom:4px;font-size:.78rem;font-weight:600;color:#5B6A99}
+input[type=date],input[type=time]{min-width:0;-webkit-appearance:none;appearance:none;text-align:left}
+input[type=date]::-webkit-date-and-time-value,input[type=time]::-webkit-date-and-time-value{text-align:left}
 input[type=radio]{appearance:none;margin:0;width:20px;height:20px;border:2px solid var(--outline);border-radius:50%;display:grid;place-content:center;cursor:pointer;background:#fff}
 input[type=radio]::before{content:"";width:10px;height:10px;border-radius:50%;transform:scale(0);transition:transform .12s;background:var(--p)}
 input[type=radio]:checked{border-color:var(--p)}
@@ -337,11 +340,15 @@ input[type=text],input[type=password],input[type=date],input[type=time],input[ty
                 <div id="u-type-pills" class="grid grid-cols-2 sm:grid-cols-4 gap-2" role="radiogroup" aria-label="ประเภทการลา"></div>
                 <select id="u-type" onchange="toggleCert()" class="hidden" aria-hidden="true" tabindex="-1"></select>
               </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div><label class="lbl" for="u-start">เริ่มวันที่</label><input type="date" id="u-start" class="pill-input"></div>
-                <div>
-                  <div id="u-end-wrap"><label class="lbl" for="u-end">ถึงวันที่</label><input type="date" id="u-end" class="pill-input"></div>
-                  <div id="u-hours-wrap" class="hidden"><label class="lbl">เวลา <span class="font-normal text-slate-400">(ไม่เกิน 8 ชม.)</span></label><div class="flex gap-1.5 items-center"><input type="time" id="u-from" class="pill-input" aria-label="เวลาเริ่ม"><span class="font-bold text-slate-400">-</span><input type="time" id="u-to" class="pill-input" aria-label="เวลาสิ้นสุด"></div></div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
+                <div><label class="lbl" for="u-start" id="u-start-lbl">เริ่มวันที่</label><input type="date" id="u-start" class="pill-input"></div>
+                <div id="u-end-wrap"><label class="lbl" for="u-end">ถึงวันที่</label><input type="date" id="u-end" class="pill-input"></div>
+              </div>
+              <div id="u-hours-wrap" class="hidden">
+                <p class="lbl">ช่วงเวลาที่ลา <span class="font-normal text-slate-400">(ไม่เกิน 8 ชม.)</span></p>
+                <div class="grid grid-cols-2 gap-4">
+                  <div><label class="time-sub" for="u-from">ตั้งแต่เวลา</label><input type="time" id="u-from" class="pill-input"></div>
+                  <div><label class="time-sub" for="u-to">ถึงเวลา</label><input type="time" id="u-to" class="pill-input"></div>
                 </div>
               </div>
               <div id="u-quota-ring" class="hidden items-center gap-4 p-3 rounded-[20px]" style="background:#F3F5FB"></div>
@@ -461,10 +468,10 @@ input[type=text],input[type=password],input[type=date],input[type=time],input[ty
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-5 items-end">
             <div class="lg:col-span-2"><label class="lbl" for="admin-user">พนักงาน</label><select id="admin-user"></select></div>
             <div class="lg:col-span-2"><label class="lbl" for="a-type">ประเภท</label><select id="a-type"></select></div>
-            <div><label class="lbl" for="a-start">วันเริ่ม</label><input type="date" id="a-start"></div>
+            <div><label class="lbl" for="a-start" id="a-start-lbl">วันเริ่ม</label><input type="date" id="a-start"></div>
             <div>
               <div id="a-end-wrap"><label class="lbl" for="a-end">วันสิ้นสุด</label><input type="date" id="a-end"></div>
-              <div id="a-hours-wrap" class="hidden"><label class="lbl">ช่วงเวลาที่ลา</label><div class="flex gap-2 items-center"><input type="time" id="a-from"><span class="font-bold text-slate-400">-</span><input type="time" id="a-to"></div></div>
+              <div id="a-hours-wrap" class="hidden"><p class="lbl">ช่วงเวลาที่ลา</p><div class="grid grid-cols-2 gap-3"><div><label class="time-sub" for="a-from">ตั้งแต่</label><input type="time" id="a-from"></div><div><label class="time-sub" for="a-to">ถึง</label><input type="time" id="a-to"></div></div></div>
             </div>
             <div class="sm:col-span-2 lg:col-span-4"><label class="lbl" for="a-reason">เหตุผล</label><input type="text" id="a-reason" placeholder="ระบุเหตุผล"></div>
             <div class="sm:col-span-2"><button type="button" onclick="submitLeaveByAdmin()" class="btn btn-fill btn-lg w-full"><span id="a-submit-label">บันทึกเข้าสู่ระบบ</span></button></div>
@@ -910,6 +917,7 @@ function toggleFormat(p) {
   const hourly = $(p + '-hourly').checked;
   $(p + '-end-wrap').classList.toggle('hidden', hourly);
   $(p + '-hours-wrap').classList.toggle('hidden', !hourly);
+  const sl = $(p + '-start-lbl'); if (sl) sl.textContent = hourly ? 'วันที่ลา' : (p === 'u' ? 'เริ่มวันที่' : 'วันเริ่ม');
   if (p === 'u') updateRing();
 }
 
