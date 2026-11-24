@@ -835,10 +835,13 @@ function renderDashboard() {
   $('u-year').innerHTML = S.years.map(y => opt(y, yLabel(y))).join('');
   $('u-year').value = u.year;
   $('u-year-pills').innerHTML = S.years.map(y => '<button type="button" class="pill' + (+y === +u.year ? ' on' : '') + '" aria-pressed="' + (+y === +u.year) + '" onclick="pickYear(' + (+y) + ')">ปี ' + (+y + 543) + '</button>').join('');
-  $('vac-note').textContent = 'สิทธิ์ลาพักร้อน: ' + (u.vac_note || '-');
+  $('vac-note').textContent = u.no_vacation ? 'ไม่มีสิทธิ์ลาพักร้อน (พนักงานรายวัน / Parttime)' : 'สิทธิ์ลาพักร้อน: ' + (u.vac_note || '-');
+  // พนักงานรายวัน / Parttime: ซ่อนลาพักร้อนทั้งการ์ดโควต้าและตัวเลือกประเภทการลา
+  document.querySelectorAll('#u-type-pills .type-pill').forEach(b => b.classList.toggle('hidden', !!u.no_vacation && b.dataset.t === 'ลาพักร้อน'));
+  [...$('u-type').options].forEach(o => { if (o.value === 'ลาพักร้อน') o.disabled = !!u.no_vacation; });
 
   let usedAll = 0;
-  $('stat-cards').innerHTML = [QUOTA_DEFS[0], QUOTA_DEFS[2], QUOTA_DEFS[1]].map(d => {
+  $('stat-cards').innerHTML = [QUOTA_DEFS[0], QUOTA_DEFS[2], QUOTA_DEFS[1]].filter(d => !(u.no_vacation && d[0] === 'vacation')).map(d => {
     const used = q[d[0]].used, total = q[d[0]].total, remain = Math.max(0, total - used), pct = total > 0 ? Math.min(100, remain / total * 100) : 0;
     usedAll += used;
     return '<div class="qcard"><span class="qcard-ico" style="color:' + d[4] + '">' + ic(d[2], 'w-7 h-7') + '</span>' +
