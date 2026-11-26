@@ -6,6 +6,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#2A3C76">
 <title>ระบบการลา | Leave Flow Pro</title>
+<!-- ติดตั้งเป็นแอปบนมือถือ (ไฟล์ manifest / ไอคอน / sw.js วางไว้โฟลเดอร์เดียวกับไฟล์นี้บน GitHub Pages) -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="48x48" href="icons/favicon-48.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="RSleave">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="application-name" content="RSleave">
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <script>tailwind.config={theme:{extend:{colors:{blue:{50:"#F3F5FB",100:"#E8ECF7",200:"#D3DAEE",300:"#B6C3E6",400:"#89A0CF",500:"#5B73B3",600:"#2A3C76",700:"#243468",800:"#1F2C58",900:"#18234A"}}}}}</script>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1409,6 +1418,12 @@ function printPDF(id) {
 }
 
 init();
+</script>
+<script>
+// ลงทะเบียน service worker เฉพาะตอนเปิดจาก GitHub Pages (https) — ใน Apps Script ไม่ทำงาน
+if ('serviceWorker' in navigator && location.protocol === 'https:' && !/google(usercontent)?\.com$/.test(location.hostname)) {
+  window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+}
 </script>
 </body>
 </html>
